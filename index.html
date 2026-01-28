@@ -2,1632 +2,190 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Two Little Bees - Salvage Yard Inventory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Two Little Bees Inventory</title>
   <style>
     :root{
       --bg:#0b0f14;
-      --panel:#111827;
-      --panel2:#0f172a;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --accent:#fbbf24;
-      --accent2:#f59e0b;
-      --danger:#ef4444;
-      --ok:#22c55e;
-      --line:#1f2937;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --radius: 18px;
+      --card:#121826;
+      --accent:#f4c430;
+      --accent2:#ffb703;
+      --text:#eaeaea;
+      --muted:#9aa4b2;
+      --danger:#ff4d4d;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 20% -10%, rgba(251,191,36,.15), transparent 60%),
-                  radial-gradient(900px 600px at 90% 0%, rgba(245,158,11,.12), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      min-height:100vh;
-    }
+    *{box-sizing:border-box;font-family:Arial, Helvetica, sans-serif}
+    body{margin:0;background:var(--bg);color:var(--text)}
     header{
-      padding:18px 20px;
-      border-bottom:1px solid var(--line);
-      background: rgba(17,24,39,.7);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top:0;
-      z-index:10;
+      display:flex;align-items:center;gap:16px;
+      padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.1)
     }
-    .brand{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      max-width: 1200px;
-      margin:0 auto;
-    }
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-    .bee{
-      width:44px;height:44px;
-      border-radius:14px;
-      background: linear-gradient(135deg, rgba(251,191,36,1), rgba(245,158,11,1));
-      display:grid;place-items:center;
-      box-shadow: var(--shadow);
-      color:#111827;
-      font-weight:900;
-      font-size:20px;
-    }
-    .titleblock h1{
-      margin:0;
-      font-size:18px;
-      letter-spacing:.2px;
-    }
-    .titleblock p{
-      margin:2px 0 0;
-      color:var(--muted);
-      font-size:12px;
-    }
-    .topActions{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    button, input, select, textarea{ font: inherit; }
-    .btn{
-      border:none;
-      padding:10px 14px;
-      border-radius:14px;
-      background: var(--panel);
-      color: var(--text);
-      cursor:pointer;
-      border:1px solid var(--line);
-      transition: .15s transform, .15s background, .15s border;
-      user-select:none;
-    }
-    .btn:hover{ transform: translateY(-1px); border-color: rgba(251,191,36,.5); }
-    .btn.primary{
-      background: linear-gradient(135deg, rgba(251,191,36,1), rgba(245,158,11,1));
-      color:#111827;
-      border: none;
-      font-weight: 800;
-    }
-    .btn.danger{
-      background: rgba(239,68,68,.14);
-      border-color: rgba(239,68,68,.35);
-      color: #fecaca;
-    }
-    .btn.ok{
-      background: rgba(34,197,94,.14);
-      border-color: rgba(34,197,94,.35);
-      color:#bbf7d0;
-    }
-    .container{
-      max-width: 1200px;
-      margin: 18px auto;
-      padding: 0 18px 28px;
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 16px;
-    }
-    @media (max-width: 980px){
-      .container{ grid-template-columns: 1fr; }
-    }
+    h1{font-size:22px;margin:0}
+    main{padding:24px;max-width:1100px;margin:auto}
+    .logo{width:56px;height:56px}
     .card{
-      background: rgba(17,24,39,.75);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:14px;
+      padding:16px;
+      margin-bottom:24px;
     }
-    .cardHead{
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+    .muted{color:var(--muted)}
+    input, button{
+      background:#0f1422;color:var(--text);
+      border:1px solid rgba(255,255,255,.15);
+      padding:10px 12px;border-radius:8px
     }
-    .cardHead h2{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.3px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .cardBody{ padding: 16px; }
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    @media (max-width: 560px){
-      .grid2{ grid-template-columns: 1fr; }
-    }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .field label{
-      font-size:12px;
-      color: var(--muted);
-    }
-    .field input, .field select, .field textarea{
-      background: rgba(15,23,42,.85);
-      border:1px solid var(--line);
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 14px;
-      outline:none;
-    }
-    .field input:focus, .field select:focus, .field textarea:focus{
-      border-color: rgba(251,191,36,.6);
-      box-shadow: 0 0 0 4px rgba(251,191,36,.12);
-    }
-    .small{ font-size:12px; color: var(--muted); }
-    .pill{
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid var(--line);
-      font-size:12px;
-      color: var(--muted);
-      background: rgba(15,23,42,.55);
-      display:inline-flex;
-      gap:6px;
-      align-items:center;
-      white-space:nowrap;
-    }
-    .pill.ok{ border-color: rgba(34,197,94,.35); color:#bbf7d0; background: rgba(34,197,94,.1); }
-    .pill.bad{ border-color: rgba(239,68,68,.35); color:#fecaca; background: rgba(239,68,68,.1); }
-    .pill.warn{ border-color: rgba(251,191,36,.35); color:#fde68a; background: rgba(251,191,36,.10); }
-    .tableWrap{
-      overflow:auto;
-      border-top:1px solid var(--line);
-    }
-    table{
-      width:100%;
-      border-collapse: collapse;
-      min-width: 820px;
-    }
-    th, td{
-      padding: 10px 12px;
-      border-bottom:1px solid rgba(31,41,55,.8);
-      text-align:left;
-      font-size: 13px;
-      vertical-align: top;
-    }
-    th{
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing:.3px;
-      background: rgba(15,23,42,.65);
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-    .rowActions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    /* Mobile card list (replaces table) */
-    .mobileList{ display:none; padding: 12px; gap:10px; }
-    .partCard{
-      border:1px solid var(--line);
-      background: rgba(15,23,42,.7);
-      border-radius: 18px;
-      padding: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .partCardTop{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
-    }
-    .partCard strong{ font-size:14px; }
-    .partMeta{ color: var(--muted); font-size:12px; line-height:1.35; }
-    .partCardActions{ display:flex; gap:8px; flex-wrap:wrap; }
-
-    @media (max-width: 720px){
-      .tableWrap{ display:none; }
-      .mobileList{ display:flex; flex-direction:column; }
-    }
-
-    .toast{
-      position: fixed;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(17,24,39,.92);
-      border:1px solid var(--line);
-      padding: 10px 14px;
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      color: var(--text);
-      display:none;
-      z-index: 50;
-      max-width: 90vw;
-    }
-    .toast.show{ display:block; }
-
-    .modalBack{
-      position: fixed;
-      inset:0;
-      background: rgba(0,0,0,.6);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index: 100;
-      padding: 16px;
-    }
-    .modalBack.show{ display:flex; }
-    .modal{
-      width: 100%;
-      max-width: 560px;
-      background: rgba(17,24,39,.95);
-      border:1px solid var(--line);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .modalHead{
-      padding: 14px 16px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .modalHead h3{ margin:0; font-size:14px; color: var(--text); }
-    .modalBody{ padding: 16px; }
-    .modalFoot{
-      padding: 14px 16px;
-      border-top:1px solid var(--line);
-      display:flex;
-      gap:10px;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-    }
-    .divider{
-      height:1px;
-      background: rgba(31,41,55,.9);
-      margin: 10px 0;
-    }
-    .invoiceList{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top: 8px;
-    }
-    .invoiceItem{
-      border:1px solid var(--line);
-      background: rgba(15,23,42,.7);
-      border-radius: 16px;
-      padding: 10px 12px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .invoiceItem strong{ font-size:13px; }
-    .invoiceItem .meta{ font-size:12px; color: var(--muted); }
-    .invoiceTotals{
-      border-top:1px solid var(--line);
-      padding-top: 10px;
-      margin-top: 10px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      font-size:13px;
-    }
-    .invoiceTotals div{
-      display:flex;
-      justify-content:space-between;
-      color: var(--text);
-    }
-    .invoiceTotals .muted{ color: var(--muted); }
-    .printArea{ display:none; }
-    @media print{
-      header, .noPrint{ display:none !important; }
-      body{ background:#fff; color:#000; }
-      .printArea{ display:block !important; padding: 0; }
-    }
-
-    /* Admin-only visibility */
-    .adminOnly{ display:none !important; }
-    body.adminOn .adminOnly{ display:inline-flex !important; }
-    body.adminOn .adminOnlyBlock{ display:block !important; }
-    .adminOnlyBlock{ display:none !important; }
+    button{cursor:pointer}
+    button.primary{background:var(--accent);color:#000;font-weight:bold}
+    button.danger{background:var(--danger);border:none}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.1);text-align:left}
+    th{color:var(--accent)}
+    .admin-only{display:none}
+    footer{text-align:center;padding:20px;color:var(--muted)}
   </style>
 </head>
 <body>
-
-<header class="noPrint">
-  <div class="brand">
-      <img src="logo.png.png" alt="Two Little Bees Logo" style="height:60px;">
-      <div class="titleblock">
-        <h1>Two Little Bees Salvage Yard</h1>
-        <p>Inventory + Admin + VIN Decode + Invoices + History (Single File)</p>
-      </div>
-    </div>
-    <div class="topActions">
-      <button class="btn" onclick="openModal('loginModal')">Admin Login</button>
-
-      <button class="btn primary adminOnly" onclick="openModal('addModal')">+ Add Part</button>
-      <button class="btn adminOnly" onclick="exportDataJSON()">Export JSON</button>
-      <button class="btn adminOnly" onclick="exportDataCSV()">Export CSV</button>
-      <button class="btn adminOnly" onclick="openModal('importModal')">Import</button>
-
-      <button class="btn ok" onclick="openModal('invoiceModal')">Invoice</button>
-      <button class="btn" onclick="openModal('historyModal')">History</button>
-    </div>
-  </div>
+<header>
+  <!-- SVG Bee Logo -->
+  <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" onclick="beeSecret()">
+    <circle cx="100" cy="100" r="95" fill="#f4c430"/>
+    <ellipse cx="100" cy="110" rx="55" ry="40" fill="#111"/>
+    <rect x="45" y="90" width="110" height="10" fill="#f4c430"/>
+    <rect x="45" y="110" width="110" height="10" fill="#f4c430"/>
+    <circle cx="80" cy="90" r="6" fill="#fff"/>
+    <circle cx="120" cy="90" r="6" fill="#fff"/>
+    <circle cx="80" cy="90" r="3" fill="#000"/>
+    <circle cx="120" cy="90" r="3" fill="#000"/>
+    <ellipse cx="55" cy="70" rx="22" ry="14" fill="#eaeaea" opacity=".8"/>
+    <ellipse cx="145" cy="70" rx="22" ry="14" fill="#eaeaea" opacity=".8"/>
+  </svg>
+  <h1>Two Little Bees – Inventory</h1>
 </header>
 
-<div class="container">
+<main>
+  <!-- Login -->
+  <div class="card" id="loginCard" style="display:none">
+    <h2>Admin Login</h2>
+    <p class="muted">Only admins can add or remove inventory.</p>
+    <div class="row">
+      <input id="username" placeholder="Username" />
+      <input id="password" type="password" placeholder="Password" />
+      <button class="primary" onclick="login()">Login</button>
+    </div>
+    <p id="loginMsg" class="muted"></p>
+  </div>
 
   <!-- Inventory -->
   <div class="card">
-    <div class="cardHead">
-      <h2>Inventory</h2>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <span class="pill" id="countPill">0 items</span>
-        <span class="pill" id="adminPill">Admin: OFF</span>
-      </div>
-    </div>
-
-    <div class="cardBody noPrint">
-      <div class="grid2">
-        <div class="field">
-          <label>Search</label>
-          <input id="searchInput" placeholder="Search part, make, model, year, VIN..." oninput="renderAll()" />
-        </div>
-        <div class="field">
-          <label>Filter</label>
-          <select id="filterSelect" onchange="renderAll()">
-            <option value="all">All</option>
-            <option value="available">Available Only</option>
-            <option value="sold">Sold Out Only</option>
-            <option value="lowstock">Low Stock (≤ 2)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>Sort By</label>
-          <select id="sortSelect" onchange="renderAll()">
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="priceHigh">Price (High → Low)</option>
-            <option value="priceLow">Price (Low → High)</option>
-            <option value="qtyHigh">Qty (High → Low)</option>
-            <option value="qtyLow">Qty (Low → High)</option>
-            <option value="availableFirst">Available First</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Quick Actions</label>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn adminOnly" onclick="seedDemo()">Load Demo</button>
-            <button class="btn danger adminOnly" onclick="clearAll()">Clear All</button>
-          </div>
-          <div class="small" style="margin-top:6px;">
-            <span class="small">Admin-only actions are hidden until login.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Desktop table -->
-    <div class="tableWrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Part</th>
-            <th>Vehicle</th>
-            <th>VIN</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th class="noPrint">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="invBody"></tbody>
-      </table>
-    </div>
-
-    <!-- Mobile cards -->
-    <div class="mobileList" id="mobileList"></div>
+    <h2>Current Inventory</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Make</th>
+          <th>Model</th>
+          <th>VIN</th>
+          <th class="admin-only">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="inventoryBody"></tbody>
+    </table>
   </div>
 
-  <!-- Invoice -->
-  <div class="card">
-    <div class="cardHead">
-      <h2>Invoice Builder</h2>
-      <span class="pill ok">Print Ready</span>
-    </div>
-    <div class="cardBody">
-      <div class="small">
-        Add items from inventory using the “Add to Invoice” button.
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="grid2">
-        <div class="field">
-          <label>Customer Name</label>
-          <input id="custName" placeholder="Customer name..." />
-        </div>
-        <div class="field">
-          <label>Payment Method</label>
-          <select id="payMethod" onchange="renderInvoice()">
-            <option value="Cash">Cash</option>
-            <option value="Card">Card</option>
-            <option value="Zelle">Zelle</option>
-            <option value="CashApp">CashApp</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>Tax %</label>
-          <input id="taxPct" type="number" step="0.01" value="0" oninput="renderInvoice()" />
-        </div>
-        <div class="field">
-          <label>Discount ($)</label>
-          <input id="discountAmt" type="number" step="0.01" value="0" oninput="renderInvoice()" />
-        </div>
-      </div>
-
-      <div class="field" style="margin-top:10px;">
-        <label>Notes</label>
-        <textarea id="invoiceNotes" rows="3" placeholder="Optional notes..."></textarea>
-      </div>
-
-      <div class="invoiceList" id="invoiceList"></div>
-      <div class="invoiceTotals" id="invoiceTotals"></div>
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-        <button class="btn ok" onclick="finalizeInvoice()">Finalize + Save</button>
-        <button class="btn ok" onclick="printInvoice()">Print</button>
-        <button class="btn danger" onclick="clearInvoice()">Clear Invoice</button>
-      </div>
-
-      <div class="small" style="margin-top:8px;">
-        Finalize will reduce inventory quantities automatically.
-      </div>
+  <!-- Admin Controls -->
+  <div class="card admin-only" id="adminPanel">
+    <h2>Add Vehicle</h2>
+    <div class="row">
+      <input id="year" placeholder="Year" />
+      <input id="make" placeholder="Make" />
+      <input id="model" placeholder="Model" />
+      <input id="vin" placeholder="VIN" />
+      <button class="primary" onclick="addCar()">Add</button>
     </div>
   </div>
+</main>
 
-</div>
-
-<!-- Print Area -->
-<div class="printArea" id="printArea"></div>
-
-<!-- Add Part Modal -->
-<div class="modalBack" id="addModal">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Add Part</h3>
-      <button class="btn" onclick="closeModal('addModal')">✕</button>
-    </div>
-    <div class="modalBody">
-      <div class="grid2">
-        <div class="field">
-          <label>Part Name</label>
-          <input id="partName" placeholder="e.g. Alternator" />
-        </div>
-        <div class="field">
-          <label>Price ($)</label>
-          <input id="partPrice" type="number" step="0.01" placeholder="0.00" />
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>Quantity</label>
-          <input id="partQty" type="number" placeholder="1" />
-        </div>
-        <div class="field">
-          <label>Status</label>
-          <select id="partStatus">
-            <option value="available">Available</option>
-            <option value="sold">Sold Out</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="grid2">
-        <div class="field">
-          <label>VIN (optional)</label>
-          <input id="vinInput" placeholder="Enter VIN..." />
-        </div>
-        <div class="field">
-          <label>Decode VIN</label>
-          <button class="btn" onclick="decodeVIN()">Decode</button>
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>Make</label>
-          <input id="makeInput" placeholder="Make" />
-        </div>
-        <div class="field">
-          <label>Model</label>
-          <input id="modelInput" placeholder="Model" />
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>Year</label>
-          <input id="yearInput" placeholder="Year" />
-        </div>
-        <div class="field">
-          <label>Condition</label>
-          <select id="condInput">
-            <option value="Used">Used</option>
-            <option value="New">New</option>
-            <option value="Refurbished">Refurbished</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field" style="margin-top:10px;">
-        <label>Notes</label>
-        <textarea id="partNotes" rows="3" placeholder="Extra details..."></textarea>
-      </div>
-
-      <div class="small" id="vinStatus" style="margin-top:8px;"></div>
-    </div>
-    <div class="modalFoot">
-      <button class="btn" onclick="closeModal('addModal')">Cancel</button>
-      <button class="btn primary" onclick="addPart()">Save Part</button>
-    </div>
-  </div>
-</div>
-
-<!-- Edit Part Modal -->
-<div class="modalBack" id="editModal">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Edit Part</h3>
-      <button class="btn" onclick="closeModal('editModal')">✕</button>
-    </div>
-    <div class="modalBody">
-      <div class="small">Update part details and save.</div>
-
-      <div class="divider"></div>
-
-      <input type="hidden" id="editId"/>
-
-      <div class="grid2">
-        <div class="field">
-          <label>Part Name</label>
-          <input id="editPartName" />
-        </div>
-        <div class="field">
-          <label>Price ($)</label>
-          <input id="editPrice" type="number" step="0.01" />
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>Quantity</label>
-          <input id="editQty" type="number" />
-        </div>
-        <div class="field">
-          <label>Status</label>
-          <select id="editStatus">
-            <option value="available">Available</option>
-            <option value="sold">Sold Out</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>VIN</label>
-          <input id="editVin" />
-        </div>
-        <div class="field">
-          <label>Condition</label>
-          <select id="editCond">
-            <option value="Used">Used</option>
-            <option value="New">New</option>
-            <option value="Refurbished">Refurbished</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid2" style="margin-top:10px;">
-        <div class="field">
-          <label>Make</label>
-          <input id="editMake" />
-        </div>
-        <div class="field">
-          <label>Model</label>
-          <input id="editModel" />
-        </div>
-      </div>
-
-      <div class="field" style="margin-top:10px;">
-        <label>Year</label>
-        <input id="editYear" />
-      </div>
-
-      <div class="field" style="margin-top:10px;">
-        <label>Notes</label>
-        <textarea id="editNotes" rows="3"></textarea>
-      </div>
-    </div>
-    <div class="modalFoot">
-      <button class="btn" onclick="closeModal('editModal')">Cancel</button>
-      <button class="btn primary" onclick="saveEdit()">Save Changes</button>
-    </div>
-  </div>
-</div>
-
-<!-- Import Modal -->
-<div class="modalBack" id="importModal">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Import Inventory</h3>
-      <button class="btn" onclick="closeModal('importModal')">✕</button>
-    </div>
-    <div class="modalBody">
-      <div class="small">Paste exported JSON below to restore inventory.</div>
-      <div class="field" style="margin-top:10px;">
-        <label>JSON Data</label>
-        <textarea id="importBox" rows="10" placeholder='[{"id":...}]'></textarea>
-      </div>
-    </div>
-    <div class="modalFoot">
-      <button class="btn" onclick="closeModal('importModal')">Cancel</button>
-      <button class="btn primary" onclick="importData()">Import</button>
-    </div>
-  </div>
-</div>
-
-<!-- Invoice Modal -->
-<div class="modalBack" id="invoiceModal">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Invoice</h3>
-      <button class="btn" onclick="closeModal('invoiceModal')">✕</button>
-    </div>
-    <div class="modalBody">
-      <div class="small">Invoice is already visible on the right side. This is just a quick open on mobile.</div>
-    </div>
-    <div class="modalFoot">
-      <button class="btn ok" onclick="printInvoice()">Print</button>
-      <button class="btn" onclick="closeModal('invoiceModal')">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- History Modal -->
-<div class="modalBack" id="historyModal">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Invoice History</h3>
-      <button class="btn" onclick="closeModal('historyModal')">✕</button>
-    </div>
-    <div class="modalBody">
-      <div class="small">Saved invoices (local on this device).</div>
-      <div class="divider"></div>
-      <div id="historyList" style="display:flex; flex-direction:column; gap:10px;"></div>
-    </div>
-    <div class="modalFoot">
-      <button class="btn danger adminOnly" onclick="clearHistory()">Clear History</button>
-      <button class="btn" onclick="closeModal('historyModal')">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Login Modal -->
-<div class="modalBack" id="loginModal">
-  <div class="modal">
-    <div class="modalHead">
-      <h3>Admin Login</h3>
-      <button class="btn" onclick="closeModal('loginModal')">✕</button>
-    </div>
-    <div class="modalBody">
-      <div class="small">Admin allows editing/deleting parts. (Front-end demo login)</div>
-      <div class="field" style="margin-top:10px;">
-        <label>Email</label>
-        <input id="adminEmail" placeholder="Email..." />
-      </div>
-      <div class="field" style="margin-top:10px;">
-        <label>Password</label>
-        <input id="adminPass" type="password" placeholder="Password..." />
-      </div>
-      <div class="small" id="loginStatus" style="margin-top:8px;"></div>
-    </div>
-    <div class="modalFoot">
-      <button class="btn" onclick="closeModal('loginModal')">Cancel</button>
-      <button class="btn primary" onclick="adminLogin()">Login</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
+<footer>
+  © 2026 Two Little Bees Inventory
+</footer>
 
 <script>
-  // ===== Demo Admin Login (Front-end only) =====
-  const ADMIN_EMAIL = "josueblas971@gmail.com";
-  const ADMIN_PASSWORD = "1520";
+  // simple demo credentials
+  const ADMIN_USER = 'admin';
+  const ADMIN_PASS = 'bees123';
 
   let isAdmin = false;
-
-  // ===== Data Storage =====
-  const LS_KEY = "twoLittleBees_inventory_v2";
-  const LS_INVOICE = "twoLittleBees_invoice_v2";
-  const LS_HISTORY = "twoLittleBees_history_v2";
-
-  let inventory = [];
-  let invoice = [];
-  let history = [];
-
-  function saveInventory(){ localStorage.setItem(LS_KEY, JSON.stringify(inventory)); }
-  function loadInventory(){
-    const raw = localStorage.getItem(LS_KEY);
-    inventory = raw ? JSON.parse(raw) : [];
-  }
-  function saveInvoice(){ localStorage.setItem(LS_INVOICE, JSON.stringify(invoice)); }
-  function loadInvoice(){
-    const raw = localStorage.getItem(LS_INVOICE);
-    invoice = raw ? JSON.parse(raw) : [];
-  }
-  function saveHistory(){ localStorage.setItem(LS_HISTORY, JSON.stringify(history)); }
-  function loadHistory(){
-    const raw = localStorage.getItem(LS_HISTORY);
-    history = raw ? JSON.parse(raw) : [];
-  }
-
-  // ===== UI Helpers =====
-  function toast(msg){
-    const t = document.getElementById("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"), 2200);
-  }
-
-  function openModal(id){
-    if((id === "addModal" || id === "importModal") && !isAdmin){
-      toast("Admin only.");
-      return;
-    }
-    document.getElementById(id).classList.add("show");
-    if(id === "historyModal") renderHistory();
-  }
-  function closeModal(id){ document.getElementById(id).classList.remove("show"); }
-
-  function money(n){
-    const x = Number(n || 0);
-    return x.toLocaleString(undefined, {style:"currency", currency:"USD"});
-  }
-
-  function escapeHtml(s){
-    return String(s||"")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  function setAdminUI(){
-    document.body.classList.toggle("adminOn", isAdmin);
-
-    const pill = document.getElementById("adminPill");
-    pill.textContent = "Admin: " + (isAdmin ? "ON" : "OFF");
-    pill.className = "pill " + (isAdmin ? "ok" : "");
-
-    document.querySelectorAll(".adminOnly").forEach(el=>{
-      el.style.display = isAdmin ? "" : "none";
-    });
-  }
-
-  // ===== VIN Decode (NHTSA) =====
-  async function decodeVIN(){
-    const vin = document.getElementById("vinInput").value.trim();
-    const status = document.getElementById("vinStatus");
-    status.textContent = "";
-    status.style.color = "";
-
-    if(!vin){
-      status.textContent = "Enter a VIN first.";
-      return;
-    }
-
-    status.textContent = "Decoding VIN...";
-    try{
-      const url = `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/${vin}?format=json`;
-      const res = await fetch(url);
-      const data = await res.json();
-      const row = data?.Results?.[0];
-
-      if(!row){
-        status.textContent = "No VIN data found.";
-        return;
-      }
-
-      document.getElementById("makeInput").value = row.Make || "";
-      document.getElementById("modelInput").value = row.Model || "";
-      document.getElementById("yearInput").value = row.ModelYear || "";
-
-      status.textContent = "VIN decoded successfully ✔";
-      status.style.color = "#bbf7d0";
-    }catch(e){
-      status.textContent = "VIN decode failed (check internet).";
-      status.style.color = "#fecaca";
-    }
-  }
-
-  // ===== Inventory Actions =====
-  function clearAddForm(){
-    ["partName","partPrice","partQty","vinInput","makeInput","modelInput","yearInput","partNotes"].forEach(id=>{
-      document.getElementById(id).value = "";
-    });
-    document.getElementById("partStatus").value = "available";
-    document.getElementById("condInput").value = "Used";
-    document.getElementById("vinStatus").textContent = "";
-    document.getElementById("vinStatus").style.color = "";
-  }
-
-  function addPart(){
-    if(!isAdmin){ toast("Admin only."); return; }
-
-    const partName = document.getElementById("partName").value.trim();
-    const price = parseFloat(document.getElementById("partPrice").value || "0");
-    const qty = parseInt(document.getElementById("partQty").value || "0");
-    const status = document.getElementById("partStatus").value;
-    const vin = document.getElementById("vinInput").value.trim();
-    const make = document.getElementById("makeInput").value.trim();
-    const model = document.getElementById("modelInput").value.trim();
-    const year = document.getElementById("yearInput").value.trim();
-    const cond = document.getElementById("condInput").value;
-    const notes = document.getElementById("partNotes").value.trim();
-
-    if(!partName){ toast("Part name required."); return; }
-
-    const fixedQty = isNaN(qty) ? 0 : qty;
-    const fixedStatus = (fixedQty <= 0 || status === "sold") ? "sold" : "available";
-
-
-    const item = {
-      id: crypto.randomUUID(),
-      createdAt: Date.now(),
-      partName,
-      price: isNaN(price) ? 0 : price,
-      qty: fixedQty,
-      status: fixedStatus,
-      vin,
-      make,
-      model,
-      year,
-      cond,
-      notes
-    };
-
-    inventory.unshift(item);
-    saveInventory();
-    renderAll();
-    closeModal("addModal");
-    clearAddForm();
-    toast("Part added ✔");
-  }
-
-  function deletePart(id){
-    if(!isAdmin){ toast("Admin only."); return; }
-    if(!confirm("Delete this part?")) return;
-    inventory = inventory.filter(x=>x.id !== id);
-    saveInventory();
-    renderAll();
-    toast("Deleted.");
-  }
-
-  function toggleSold(id){
-    if(!isAdmin){ toast("Admin only."); return; }
-    const item = inventory.find(x=>x.id===id);
-    if(!item) return;
-    item.status = item.status === "sold" ? "available" : "sold";
-    saveInventory();
-    renderAll();
-    toast("Status updated.");
-  }
-
-  function openEdit(id){
-    if(!isAdmin){ toast("Admin only."); return; }
-    const item = inventory.find(x=>x.id===id);
-    if(!item) return;
-
-    document.getElementById("editId").value = item.id;
-    document.getElementById("editPartName").value = item.partName || "";
-    document.getElementById("editPrice").value = Number(item.price||0);
-    document.getElementById("editQty").value = Number(item.qty||0);
-    document.getElementById("editStatus").value = item.status || "available";
-    document.getElementById("editVin").value = item.vin || "";
-    document.getElementById("editCond").value = item.cond || "Used";
-    document.getElementById("editMake").value = item.make || "";
-    document.getElementById("editModel").value = item.model || "";
-    document.getElementById("editYear").value = item.year || "";
-    document.getElementById("editNotes").value = item.notes || "";
-
-    openModal("editModal");
-  }
-
-  function saveEdit(){
-    if(!isAdmin){ toast("Admin only."); return; }
-
-    const id = document.getElementById("editId").value;
-    const item = inventory.find(x=>x.id===id);
-    if(!item) return;
-
-    item.partName = document.getElementById("editPartName").value.trim();
-    item.price = Number(document.getElementById("editPrice").value || 0);
-    item.qty = Number(document.getElementById("editQty").value || 0);
-    item.status = document.getElementById("editStatus").value;
-    item.vin = document.getElementById("editVin").value.trim();
-    item.cond = document.getElementById("editCond").value;
-    item.make = document.getElementById("editMake").value.trim();
-    item.model = document.getElementById("editModel").value.trim();
-    item.year = document.getElementById("editYear").value.trim();
-    item.notes = document.getElementById("editNotes").value.trim();
-
-    item.status = item.qty <= 0 ? "sold" : "available";
-
-    saveInventory();
-    closeModal("editModal");
-    renderAll();
-    toast("Saved ✔");
-  }
-
-  function addToInvoice(id){
-    const item = inventory.find(x=>x.id===id);
-    if(!item) return;
-
-    if(item.status === "sold" || Number(item.qty||0) <= 0){
-      toast("This item is sold out.");
-      return;
-    }
-
-    // If already in invoice, increase qty
-    const existing = invoice.find(l => l.itemId === item.id);
-    if(existing){
-      if(existing.qty + 1 > Number(item.qty||0)){
-        toast("Not enough stock.");
-        return;
-      }
-      existing.qty += 1;
-    }else{
-      invoice.push({
-        lineId: crypto.randomUUID(),
-        itemId: item.id,
-        name: item.partName,
-        vehicle: `${item.year || ""} ${item.make || ""} ${item.model || ""}`.trim(),
-        price: Number(item.price || 0),
-        qty: 1
-      });
-    }
-
-    saveInvoice();
-    renderInvoice();
-    toast("Added to invoice ✔");
-  }
-
-  // ===== Render Inventory =====
-  function getFilteredList(){
-    const search = document.getElementById("searchInput").value.trim().toLowerCase();
-    const filter = document.getElementById("filterSelect").value;
-    const sort = document.getElementById("sortSelect").value;
-
-    let list = [...inventory];
-
-    // Filter
-    if(filter === "available"){
-      list = list.filter(x=>x.status !== "sold" && Number(x.qty||0) > 0);
-    }else if(filter === "sold"){
-      list = list.filter(x=>x.status === "sold" || Number(x.qty||0) <= 0);
-    }else if(filter === "lowstock"){
-      list = list.filter(x=>x.status !== "sold" && Number(x.qty||0) > 0 && Number(x.qty||0) <= 2);
-    }
-
-    // Search
-    if(search){
-      list = list.filter(x=>{
-        const blob = `${x.partName} ${x.make} ${x.model} ${x.year} ${x.vin} ${x.notes}`.toLowerCase();
-        return blob.includes(search);
-      });
-    }
-
-    // Sort
-    list.sort((a,b)=>{
-      if(sort==="newest") return b.createdAt - a.createdAt;
-      if(sort==="oldest") return a.createdAt - b.createdAt;
-      if(sort==="priceHigh") return (b.price||0) - (a.price||0);
-      if(sort==="priceLow") return (a.price||0) - (b.price||0);
-      if(sort==="qtyHigh") return (b.qty||0) - (a.qty||0);
-      if(sort==="qtyLow") return (a.qty||0) - (b.qty||0);
-      if(sort==="availableFirst"){
-        const avA = (a.status !== "sold" && Number(a.qty||0) > 0) ? 1 : 0;
-        const avB = (b.status !== "sold" && Number(b.qty||0) > 0) ? 1 : 0;
-        return avB - avA;
-      }
-      return 0;
-    });
-
-    return list;
-  }
-
-  function renderTable(){
-    const tbody = document.getElementById("invBody");
-    tbody.innerHTML = "";
-
-    const list = getFilteredList();
-    document.getElementById("countPill").textContent = `${list.length} item(s)`;
-
-    for(const x of list){
-      const tr = document.createElement("tr");
-
-      const isSold = (x.status === "sold" || Number(x.qty||0) <= 0);
-      const isLow = (!isSold && Number(x.qty||0) <= 2);
-
-      const statusPill = isSold
-        ? `<span class="pill bad">Sold Out</span>`
-        : (isLow ? `<span class="pill warn">Low Stock</span>` : `<span class="pill ok">Available</span>`);
-
-      const adminActions = isAdmin ? `
-        <button class="btn" onclick="openEdit('${x.id}')">Edit</button>
-        <button class="btn" onclick="toggleSold('${x.id}')">Toggle Sold</button>
-        <button class="btn danger" onclick="deletePart('${x.id}')">Delete</button>
-      ` : "";
-
-      tr.innerHTML = `
-        <td>
-          <strong>${escapeHtml(x.partName)}</strong><br/>
-          <span class="small">${escapeHtml(x.cond || "")}</span>
-        </td>
-        <td>
-          ${escapeHtml(x.year || "")} ${escapeHtml(x.make || "")} ${escapeHtml(x.model || "")}<br/>
-          <span class="small">${escapeHtml(x.notes || "")}</span>
-        </td>
-        <td><span class="small">${escapeHtml(x.vin || "-")}</span></td>
-        <td>${Number(x.qty||0)}</td>
-        <td>${money(x.price)}</td>
-        <td>${statusPill}</td>
-        <td class="noPrint">
-          <div class="rowActions">
-            <button class="btn ok" onclick="addToInvoice('${x.id}')">Add to Invoice</button>
-            ${adminActions}
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    }
-  }
-
-  function renderMobileCards(){
-    const wrap = document.getElementById("mobileList");
-    wrap.innerHTML = "";
-
-    const list = getFilteredList();
-
-    for(const x of list){
-      const isSold = (x.status === "sold" || Number(x.qty||0) <= 0);
-      const isLow = (!isSold && Number(x.qty||0) <= 2);
-
-      const statusPill = isSold
-        ? `<span class="pill bad">Sold Out</span>`
-        : (isLow ? `<span class="pill warn">Low Stock</span>` : `<span class="pill ok">Available</span>`);
-
-      const div = document.createElement("div");
-      div.className = "partCard";
-
-      div.innerHTML = `
-        <div class="partCardTop">
-          <div>
-            <strong>${escapeHtml(x.partName)}</strong>
-            <div class="partMeta">${escapeHtml(x.cond || "")}</div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-            ${statusPill}
-            <div class="partMeta">${money(x.price)}</div>
-          </div>
-        </div>
-
-        <div class="partMeta">
-          <div><strong>Vehicle:</strong> ${escapeHtml(`${x.year||""} ${x.make||""} ${x.model||""}`.trim() || "-")}</div>
-          <div><strong>VIN:</strong> ${escapeHtml(x.vin || "-")}</div>
-          <div><strong>Qty:</strong> ${Number(x.qty||0)}</div>
-          ${x.notes ? `<div><strong>Notes:</strong> ${escapeHtml(x.notes)}</div>` : ""}
-        </div>
-
-        <div class="partCardActions">
-          <button class="btn ok" onclick="addToInvoice('${x.id}')">Add to Invoice</button>
-          ${isAdmin ? `
-            <button class="btn" onclick="openEdit('${x.id}')">Edit</button>
-            <button class="btn danger" onclick="deletePart('${x.id}')">Delete</button>
-          ` : ""}
-        </div>
-      `;
-
-      wrap.appendChild(div);
-    }
-  }
-
-  function renderAll(){
-    renderTable();
-    renderMobileCards();
-    renderInvoice();
-  }
-
-  // ===== Invoice =====
-  function renderInvoice(){
-    const listEl = document.getElementById("invoiceList");
-    const totalsEl = document.getElementById("invoiceTotals");
-    listEl.innerHTML = "";
-    totalsEl.innerHTML = "";
-
-    if(invoice.length === 0){
-      listEl.innerHTML = `<div class="small">No items added yet.</div>`;
-      totalsEl.innerHTML = "";
-      return;
-    }
-
-    let subtotal = 0;
-
-    invoice.forEach(line=>{
-      const lineTotal = (Number(line.price||0) * Number(line.qty||1));
-      subtotal += lineTotal;
-
-      const div = document.createElement("div");
-      div.className = "invoiceItem";
-      div.innerHTML = `
-        <div>
-          <strong>${escapeHtml(line.name)}</strong>
-          <div class="meta">${escapeHtml(line.vehicle || "")}</div>
-          <div class="meta">${money(line.price)} x ${line.qty}</div>
-        </div>
-        <div style="text-align:right;">
-          <div><strong>${money(lineTotal)}</strong></div>
-          <div style="display:flex; gap:6px; margin-top:6px; justify-content:flex-end; flex-wrap:wrap;">
-            <button class="btn" onclick="qtyInvoice('${line.lineId}', -1)">-</button>
-            <button class="btn" onclick="qtyInvoice('${line.lineId}', 1)">+</button>
-            <button class="btn danger" onclick="removeInvoice('${line.lineId}')">Remove</button>
-          </div>
-        </div>
-      `;
-      listEl.appendChild(div);
-    });
-
-    const taxPct = Number(document.getElementById("taxPct").value || 0);
-    const discount = Math.max(0, Number(document.getElementById("discountAmt").value || 0));
-    const tax = subtotal * (taxPct / 100);
-    const total = Math.max(0, subtotal + tax - discount);
-
-    totalsEl.innerHTML = `
-      <div><span class="muted">Subtotal</span><span>${money(subtotal)}</span></div>
-      <div><span class="muted">Tax (${taxPct.toFixed(2)}%)</span><span>${money(tax)}</span></div>
-      <div><span class="muted">Discount</span><span>-${money(discount)}</span></div>
-      <div><span class="muted">Total</span><span><strong>${money(total)}</strong></span></div>
-    `;
-  }
-
-  function qtyInvoice(lineId, delta){
-    const line = invoice.find(x=>x.lineId===lineId);
-    if(!line) return;
-
-    const invItem = inventory.find(i => i.id === line.itemId);
-    const maxQty = invItem ? Number(invItem.qty||0) : 9999;
-
-    line.qty = Math.max(1, Number(line.qty||1) + delta);
-
-    if(line.qty > maxQty){
-      line.qty = maxQty;
-      toast("Not enough stock.");
-    }
-
-    saveInvoice();
-    renderInvoice();
-  }
-
-  function removeInvoice(lineId){
-    invoice = invoice.filter(x=>x.lineId !== lineId);
-    saveInvoice();
-    renderInvoice();
-  }
-
-  function clearInvoice(){
-    if(!confirm("Clear invoice?")) return;
-    invoice = [];
-    saveInvoice();
-    renderInvoice();
-    toast("Invoice cleared.");
-  }
-
-  function nextInvoiceNumber(){
-    const key = "twoLittleBees_invoiceCounter_v2";
-    const raw = localStorage.getItem(key);
-    const n = raw ? Number(raw) : 1000;
-    const next = n + 1;
-    localStorage.setItem(key, String(next));
-    return next;
-  }
-
-  function finalizeInvoice(){
-    if(invoice.length === 0){
-      toast("Invoice is empty.");
-      return;
-    }
-
-    // Reduce stock
-    for(const line of invoice){
-      const item = inventory.find(x => x.id === line.itemId);
-      if(!item) continue;
-
-      item.qty = Math.max(0, Number(item.qty||0) - Number(line.qty||1));
-      if(item.qty <= 0){
-        item.status = "sold";
-      }
-    }
-
-    const invoiceNo = nextInvoiceNumber();
-    const now = new Date();
-
-    let subtotal = 0;
-    invoice.forEach(line=>{
-      subtotal += (Number(line.price||0) * Number(line.qty||1));
-    });
-
-    const taxPct = Number(document.getElementById("taxPct").value || 0);
-    const discount = Math.max(0, Number(document.getElementById("discountAmt").value || 0));
-    const tax = subtotal * (taxPct / 100);
-    const total = Math.max(0, subtotal + tax - discount);
-
-    const record = {
-      id: crypto.randomUUID(),
-      invoiceNo,
-      createdAt: Date.now(),
-      dateText: now.toLocaleString(),
-      customer: document.getElementById("custName").value.trim() || "Walk-in",
-      payment: document.getElementById("payMethod").value,
-      notes: document.getElementById("invoiceNotes").value.trim(),
-      taxPct,
-      discount,
-      subtotal,
-      tax,
-      total,
-      lines: invoice.map(x => ({...x}))
-    };
-
-    history.unshift(record);
-    saveHistory();
-    saveInventory();
-
-    // Clear current invoice
-    invoice = [];
-    saveInvoice();
-    renderAll();
-    toast(`Invoice #${invoiceNo} saved ✔`);
-  }
-
-  function printInvoice(){
-    if(invoice.length === 0){
-      toast("Invoice is empty.");
-      return;
-    }
-
-    const name = document.getElementById("custName").value.trim();
-    const notes = document.getElementById("invoiceNotes").value.trim();
-    const pay = document.getElementById("payMethod").value;
-    const taxPct = Number(document.getElementById("taxPct").value || 0);
-    const discount = Math.max(0, Number(document.getElementById("discountAmt").value || 0));
-    const now = new Date();
-
-    let subtotal = 0;
-    const rows = invoice.map(line=>{
-      const lt = Number(line.price||0) * Number(line.qty||1);
-      subtotal += lt;
-      return `
-        <tr>
-          <td>${escapeHtml(line.name)}</td>
-          <td>${escapeHtml(line.vehicle || "")}</td>
-          <td>${line.qty}</td>
-          <td>${money(line.price)}</td>
-          <td>${money(lt)}</td>
-        </tr>
-      `;
-    }).join("");
-
-    const tax = subtotal * (taxPct / 100);
-    const total = Math.max(0, subtotal + tax - discount);
-
-    const html = `
-      <div style="padding:20px; font-family: Arial, sans-serif;">
-        <h2 style="margin:0;">Two Little Bees Salvage Yard</h2>
-        <div style="margin-top:4px;">Invoice</div>
-        <hr/>
-        <div><strong>Date:</strong> ${now.toLocaleString()}</div>
-        <div><strong>Customer:</strong> ${escapeHtml(name || "Walk-in")}</div>
-        <div><strong>Payment:</strong> ${escapeHtml(pay)}</div>
-        ${notes ? `<div><strong>Notes:</strong> ${escapeHtml(notes)}</div>` : ""}
-        <hr/>
-        <table style="width:100%; border-collapse:collapse;" border="1" cellpadding="8">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Vehicle</th>
-              <th>Qty</th>
-              <th>Price</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-        <div style="margin-top:12px; text-align:right;">
-          <div><strong>Subtotal:</strong> ${money(subtotal)}</div>
-          <div><strong>Tax (${taxPct.toFixed(2)}%):</strong> ${money(tax)}</div>
-          <div><strong>Discount:</strong> -${money(discount)}</div>
-          <h3 style="margin:8px 0 0;">Total: ${money(total)}</h3>
-        </div>
-        <p style="margin-top:18px;">Thank you for your business 🐝</p>
-      </div>
-    `;
-
-    document.getElementById("printArea").innerHTML = html;
-    window.print();
-  }
-
-  // ===== History =====
-  function renderHistory(){
-    const el = document.getElementById("historyList");
-    el.innerHTML = "";
-
-    if(history.length === 0){
-      el.innerHTML = `<div class="small">No invoices saved yet.</div>`;
-      return;
-    }
-
-    history.slice(0, 30).forEach(inv=>{
-      const div = document.createElement("div");
-      div.className = "invoiceItem";
-      div.innerHTML = `
-        <div>
-          <strong>Invoice #${inv.invoiceNo}</strong>
-          <div class="meta">${escapeHtml(inv.dateText)}</div>
-          <div class="meta">${escapeHtml(inv.customer)} • ${escapeHtml(inv.payment)}</div>
-          <div class="meta">${inv.lines.length} item(s)</div>
-        </div>
-        <div style="text-align:right;">
-          <div><strong>${money(inv.total)}</strong></div>
-          <div style="display:flex; gap:6px; margin-top:6px; justify-content:flex-end; flex-wrap:wrap;">
-            <button class="btn" onclick="copyInvoiceText('${inv.id}')">Copy</button>
-          </div>
-        </div>
-      `;
-      el.appendChild(div);
-    });
-  }
-
-  function copyInvoiceText(id){
-    const inv = history.find(x=>x.id===id);
-    if(!inv) return;
-
-    const lines = inv.lines.map(l => `- ${l.name} (${l.vehicle}) x${l.qty} @ ${money(l.price)}`).join("\n");
-    const text =
-`Two Little Bees Salvage Yard
-Invoice #${inv.invoiceNo}
-Date: ${inv.dateText}
-Customer: ${inv.customer}
-Payment: ${inv.payment}
-
-Items:
-${lines}
-
-Subtotal: ${money(inv.subtotal)}
-Tax: ${money(inv.tax)}
-Discount: -${money(inv.discount)}
-Total: ${money(inv.total)}
-`;
-
-    navigator.clipboard.writeText(text).then(()=>{
-      toast("Invoice copied ✔");
-    }).catch(()=>{
-      prompt("Copy invoice:", text);
-    });
-  }
-
-  function clearHistory(){
-    if(!confirm("Clear ALL invoice history?")) return;
-    history = [];
-    saveHistory();
-    renderHistory();
-    toast("History cleared.");
-  }
-
-  // ===== Import / Export =====
-  function exportDataJSON(){
-    if(!isAdmin){ toast("Admin only."); return; }
-    const data = JSON.stringify(inventory, null, 2);
-    navigator.clipboard.writeText(data).then(()=>{
-      toast("Export copied to clipboard ✔");
-    }).catch(()=>{
-      prompt("Copy this JSON:", data);
-    });
-  }
-
-  function exportDataCSV(){
-    if(!isAdmin){ toast("Admin only."); return; }
-
-    const header = ["Part","Year","Make","Model","VIN","Qty","Price","Status","Condition","Notes"];
-    const rows = inventory.map(x => ([
-      x.partName||"",
-      x.year||"",
-      x.make||"",
-      x.model||"",
-      x.vin||"",
-      Number(x.qty||0),
-      Number(x.price||0),
-      x.status||"",
-      x.cond||"",
-      (x.notes||"").replaceAll("\n"," ")
-    ]));
-
-    const csv = [header, ...rows]
-      .map(r => r.map(v => `"${String(v).replaceAll('"','""')}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "two_little_bees_inventory.csv";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-
-    toast("CSV downloaded ✔");
-  }
-
-  function importData(){
-    if(!isAdmin){ toast("Admin only."); return; }
-    const box = document.getElementById("importBox").value.trim();
-    if(!box){ toast("Paste JSON first."); return; }
-    try{
-      const parsed = JSON.parse(box);
-      if(!Array.isArray(parsed)) throw new Error("Not an array");
-      inventory = parsed;
-      saveInventory();
-      renderAll();
-      closeModal("importModal");
-      toast("Import complete ✔");
-    }catch(e){
-      toast("Invalid JSON.");
-    }
-  }
-
-  function clearAll(){
-    if(!isAdmin){ toast("Admin only."); return; }
-    if(!confirm("Clear ALL inventory?")) return;
-    inventory = [];
-    saveInventory();
-    renderAll();
-    toast("All cleared.");
-  }
-
-  function seedDemo(){
-    if(!isAdmin){ toast("Admin only."); return; }
-    inventory = [
-      {
-        id: crypto.randomUUID(),
-        createdAt: Date.now()-100000,
-        partName:"Alternator",
-        price:85,
-        qty:2,
-        status:"available",
-        vin:"1HGCM82633A004352",
-        make:"Honda",
-        model:"Accord",
-        year:"2003",
-        cond:"Used",
-        notes:"Tested, good condition."
-      },
-      {
-        id: crypto.randomUUID(),
-        createdAt: Date.now()-50000,
-        partName:"Front Bumper",
-        price:140,
-        qty:1,
-        status:"available",
-        vin:"",
-        make:"Toyota",
-        model:"Camry",
-        year:"2012",
-        cond:"Used",
-        notes:"Minor scratches."
-      },
-      {
-        id: crypto.randomUUID(),
-        createdAt: Date.now()-20000,
-        partName:"Transmission",
-        price:650,
-        qty:0,
-        status:"sold",
-        vin:"",
-        make:"Ford",
-        model:"F-150",
-        year:"2015",
-        cond:"Used",
-        notes:"Sold - keep record."
-      }
-    ];
-    saveInventory();
-    renderAll();
-    toast("Demo inventory loaded ✔");
-  }
-
-  // ===== Admin Login =====
-  function adminLogin(){
-    const email = document.getElementById("adminEmail").value.trim();
-    const pass = document.getElementById("adminPass").value.trim();
-    const status = document.getElementById("loginStatus");
-
-    if(email === ADMIN_EMAIL && pass === ADMIN_PASSWORD){
+  let beeClicks = 0;
+  let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+  function login(){
+    const u = document.getElementById('username').value;
+    const p = document.getElementById('password').value;
+    if(u === ADMIN_USER && p === ADMIN_PASS){
       isAdmin = true;
-      status.textContent = "Login success ✔";
-      status.style.color = "#bbf7d0";
-      setAdminUI();
-      toast("Admin enabled ✔");
-      setTimeout(()=>closeModal("loginModal"), 600);
-      renderAll();
-    }else{
-      isAdmin = false;
-      status.textContent = "Wrong email or password.";
-      status.style.color = "#fecaca";
-      setAdminUI();
+      document.getElementById('loginMsg').innerText = 'Logged in as admin';
+      document.querySelectorAll('.admin-only').forEach(e=>e.style.display='table-cell');
+      document.getElementById('adminPanel').style.display='block';
+      document.getElementById('loginCard').style.display='none';
+      render();
+    } else {
+      document.getElementById('loginMsg').innerText = 'Invalid login';
     }
   }
 
-  // ===== Init =====
-  function init(){
-    loadInventory();
-    loadInvoice();
-    loadHistory();
-    setAdminUI();
-    renderAll();
+  function beeSecret(){
+    beeClicks++;
+    if(beeClicks === 3){
+      document.getElementById('loginCard').style.display = 'block';
+      document.getElementById('loginMsg').innerText = 'Admin access unlocked';
+      beeClicks = 0;
+    }
+    setTimeout(()=>beeClicks=0, 1200);
   }
-  init();
 
-  // Close modals when clicking outside
-  document.querySelectorAll(".modalBack").forEach(back=>{
-    back.addEventListener("click", (e)=>{
-      if(e.target === back) back.classList.remove("show");
+  function addCar(){
+    const car = {
+      year: year.value,
+      make: make.value,
+      model: model.value,
+      vin: vin.value
+    };
+    inventory.push(car);
+    save();
+    render();
+    year.value = make.value = model.value = vin.value = '';
+  }
+
+  function removeCar(index){
+    inventory.splice(index,1);
+    save();
+    render();
+  }
+
+  function save(){
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+  }
+
+  function render(){
+    const body = document.getElementById('inventoryBody');
+    body.innerHTML = '';
+    inventory.forEach((c,i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${c.year}</td>
+        <td>${c.make}</td>
+        <td>${c.model}</td>
+        <td>${c.vin}</td>
+        ${isAdmin ? `<td><button class='danger' onclick='removeCar(${i})'>Delete</button></td>` : ''}
+      `;
+      body.appendChild(tr);
     });
-  });
-</script>
+  }
 
+  render();
+</script>
 </body>
 </html>
