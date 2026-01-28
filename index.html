@@ -913,7 +913,8 @@
     if(!partName){ toast("Part name required."); return; }
 
     const fixedQty = isNaN(qty) ? 0 : qty;
-    const fixedStatus = fixedQty <= 0 ? "sold" : status;
+    const fixedStatus = (fixedQty <= 0 || status === "sold") ? "sold" : "available";
+
 
     const item = {
       id: crypto.randomUUID(),
@@ -995,7 +996,7 @@
     item.year = document.getElementById("editYear").value.trim();
     item.notes = document.getElementById("editNotes").value.trim();
 
-    if(item.qty <= 0) item.status = "sold";
+    item.status = item.qty <= 0 ? "sold" : "available";
 
     saveInventory();
     closeModal("editModal");
