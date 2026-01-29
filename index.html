@@ -1,171 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Two Little Bees Inventory</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Two Little Bees Inventory</title>
 
-  <!-- Firebase SDKs (SCRIPT TAG VERSION) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <style>
-    :root{
-      --bg:#0b0f14;
-      --card:#121826;
-      --accent:#f4c430;
-      --text:#eaeaea;
-      --muted:#9aa4b2;
-      --danger:#ff4d4d;
-    }
-    *{box-sizing:border-box;font-family:Arial, Helvetica, sans-serif}
-    body{margin:0;background:var(--bg);color:var(--text)}
-    header{display:flex;align-items:center;gap:16px;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.1)}
-    h1{font-size:22px;margin:0}
-    main{padding:24px;max-width:1100px;margin:auto}
-    .logo{width:56px;height:56px;cursor:pointer}
-    .card{background:var(--card);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;margin-bottom:24px}
-    .muted{color:var(--muted)}
-    input, button{background:#0f1422;color:var(--text);border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:8px}
-    button{cursor:pointer}
-    button.primary{background:var(--accent);color:#000;font-weight:bold}
-    button.danger{background:var(--danger);border:none}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    table{width:100%;border-collapse:collapse;margin-top:12px}
-    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.1)}
-    th{color:var(--accent)}
-    .admin-only{display:none}
-    footer{text-align:center;padding:20px;color:var(--muted)}
-  </style>
+<style>
+:root{
+--bg:#0b0f14;--card:#121826;--accent:#f4c430;
+--text:#eaeaea;--muted:#9aa4b2;--danger:#ff4d4d;
+}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text)}
+header{display:flex;align-items:center;gap:16px;padding:16px 24px;border-bottom:1px solid #ffffff22}
+main{padding:24px;max-width:1100px;margin:auto}
+.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:24px}
+.logo{width:56px;height:56px;cursor:pointer}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input,button{background:#0f1422;color:#fff;border:1px solid #ffffff22;padding:10px;border-radius:8px}
+button.primary{background:var(--accent);color:#000;font-weight:bold}
+button.danger{background:var(--danger);border:none}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{padding:10px;border-bottom:1px solid #ffffff22;vertical-align:top}
+th{color:var(--accent)}
+.specs{font-size:13px;color:var(--muted);margin-top:4px}
+.admin-only{display:none}
+footer{text-align:center;padding:20px;color:var(--muted)}
+</style>
 </head>
+
 <body>
 
 <header>
-  <svg class="logo" viewBox="0 0 200 200" onclick="beeSecret()">
-    <circle cx="100" cy="100" r="95" fill="#f4c430"/>
-    <ellipse cx="100" cy="110" rx="55" ry="40" fill="#111"/>
-    <rect x="45" y="90" width="110" height="10" fill="#f4c430"/>
-    <rect x="45" y="110" width="110" height="10" fill="#f4c430"/>
-    <circle cx="80" cy="90" r="6" fill="#fff"/>
-    <circle cx="120" cy="90" r="6" fill="#fff"/>
-    <circle cx="80" cy="90" r="3" fill="#000"/>
-    <circle cx="120" cy="90" r="3" fill="#000"/>
-  </svg>
-  <h1>Two Little Bees – Inventory</h1>
+<svg class="logo" viewBox="0 0 200 200" onclick="beeSecret()">
+<circle cx="100" cy="100" r="95" fill="#f4c430"/>
+<ellipse cx="100" cy="110" rx="55" ry="40" fill="#111"/>
+<rect x="45" y="90" width="110" height="10" fill="#f4c430"/>
+<rect x="45" y="110" width="110" height="10" fill="#f4c430"/>
+</svg>
+<h2>Two Little Bees – Inventory</h2>
 </header>
 
 <main>
-  <div class="card" id="loginCard" style="display:none">
-    <h2>Admin Login</h2>
-    <div class="row">
-      <input id="username" placeholder="Username">
-      <input id="password" type="password" placeholder="Password">
-      <button class="primary" onclick="login()">Login</button>
-    </div>
-    <p id="loginMsg" class="muted"></p>
-  </div>
 
-  <div class="card">
-    <h2>Current Inventory</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Year</th><th>Make</th><th>Model</th><th>VIN</th>
-          <th class="admin-only">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="inventoryBody"></tbody>
-    </table>
-  </div>
+<!-- LOGIN -->
+<div class="card" id="loginCard" style="display:none">
+<h3>Admin Login</h3>
+<div class="row">
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+<button class="primary" onclick="login()">Login</button>
+</div>
+<p id="loginMsg" class="specs"></p>
+</div>
 
-  <div class="card admin-only" id="adminPanel">
-    <h2>Add Vehicle</h2>
-    <div class="row">
-      <input id="year" placeholder="Year">
-      <input id="make" placeholder="Make">
-      <input id="model" placeholder="Model">
-      <input id="vin" placeholder="VIN">
-      <button class="primary" onclick="addCar()">Add</button>
-    </div>
-  </div>
+<!-- INVENTORY -->
+<div class="card">
+<h3>Current Inventory</h3>
+<table>
+<thead>
+<tr>
+<th>Vehicle</th>
+<th>VIN</th>
+<th class="admin-only">Actions</th>
+</tr>
+</thead>
+<tbody id="inventoryBody"></tbody>
+</table>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="card admin-only" id="adminPanel">
+<h3>Add Vehicle</h3>
+<div class="row">
+<input id="year" placeholder="Year">
+<input id="make" placeholder="Brand">
+<input id="model" placeholder="Model">
+<input id="vin" placeholder="VIN">
+<input id="color" placeholder="Color">
+<input id="engine" placeholder="Engine Size">
+<input id="transmission" placeholder="Transmission">
+<input id="drivetrain" placeholder="Drivetrain">
+<button class="primary" onclick="addCar()">Add</button>
+</div>
+</div>
+
 </main>
 
 <footer>© 2026 Two Little Bees Inventory</footer>
 
 <script>
-  // 🔐 Admin login (simple)
-  const ADMIN_USER = "admin";
-  const ADMIN_PASS = "bees123";
-  let isAdmin = false;
-  let beeClicks = 0;
+/* ADMIN LOGIN */
+const ADMIN_USER="admin";
+const ADMIN_PASS="bees123";
+let isAdmin=false;
+let beeClicks=0;
 
-  // 🔥 Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBQ5WyWulY-MPb9Wlv144AwjjcS-JZt9k",
-    authDomain: "two-little-bees-inventory.firebaseapp.com",
-    projectId: "two-little-bees-inventory",
-  };
+/* FIREBASE */
+firebase.initializeApp({
+apiKey:"AIzaSyBQ5WyWulY-MPb9Wlv144AwjjcS-JZt9k",
+authDomain:"two-little-bees-inventory.firebaseapp.com",
+projectId:"two-little-bees-inventory"
+});
+const db=firebase.firestore();
+const ref=db.collection("inventory");
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const inventoryRef = db.collection("inventory");
+function beeSecret(){
+beeClicks++;
+if(beeClicks===3){
+loginCard.style.display="block";
+beeClicks=0;
+}
+setTimeout(()=>beeClicks=0,1000);
+}
 
-  function login(){
-    if(username.value === ADMIN_USER && password.value === ADMIN_PASS){
-      isAdmin = true;
-      document.querySelectorAll('.admin-only').forEach(e=>e.style.display='table-cell');
-      adminPanel.style.display='block';
-      loginCard.style.display='none';
-      render();
-    } else {
-      loginMsg.innerText = "Invalid login";
-    }
-  }
+function login(){
+if(username.value===ADMIN_USER && password.value===ADMIN_PASS){
+isAdmin=true;
+document.querySelectorAll('.admin-only').forEach(e=>e.style.display="table-cell");
+adminPanel.style.display="block";
+loginCard.style.display="none";
+render();
+}else{
+loginMsg.textContent="Invalid login";
+}
+}
 
-  function beeSecret(){
-    beeClicks++;
-    if(beeClicks === 3){
-      loginCard.style.display = "block";
-      beeClicks = 0;
-    }
-    setTimeout(()=>beeClicks=0,1000);
-  }
+async function addCar(){
+await ref.add({
+year:year.value,
+make:make.value,
+model:model.value,
+vin:vin.value,
+color:color.value,
+engine:engine.value,
+transmission:transmission.value,
+drivetrain:drivetrain.value
+});
+document.querySelectorAll('#adminPanel input').forEach(i=>i.value="");
+}
 
-  async function addCar(){
-    await inventoryRef.add({
-      year: year.value,
-      make: make.value,
-      model: model.value,
-      vin: vin.value
-    });
-    year.value = make.value = model.value = vin.value = "";
-  }
+async function removeCar(id){
+await ref.doc(id).delete();
+}
 
-  async function removeCar(id){
-    await inventoryRef.doc(id).delete();
-  }
-
-  function render(){
-    inventoryRef.onSnapshot(snapshot=>{
-      inventoryBody.innerHTML = "";
-      snapshot.forEach(doc=>{
-        const c = doc.data();
-        inventoryBody.innerHTML += `
-          <tr>
-            <td>${c.year}</td>
-            <td>${c.make}</td>
-            <td>${c.model}</td>
-            <td>${c.vin}</td>
-            ${isAdmin ? `<td><button class="danger" onclick="removeCar('${doc.id}')">Delete</button></td>` : ""}
-          </tr>
-        `;
-      });
-    });
-  }
-
-  render();
+function render(){
+ref.onSnapshot(s=>{
+inventoryBody.innerHTML="";
+s.forEach(d=>{
+const c=d.data();
+inventoryBody.innerHTML+=`
+<tr>
+<td>
+<strong>${c.year} ${c.make} ${c.model}</strong>
+<div class="specs">
+${c.color} · ${c.engine} · ${c.transmission} · ${c.drivetrain}
+</div>
+</td>
+<td>${c.vin}</td>
+${isAdmin?`<td><button class="danger" onclick="removeCar('${d.id}')">Delete</button></td>`:""}
+</tr>`;
+});
+});
+}
+render();
 </script>
 
 </body>
 </html>
+
 
