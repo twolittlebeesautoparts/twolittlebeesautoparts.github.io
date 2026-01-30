@@ -68,6 +68,18 @@ main{
   padding:24px 16px 40px;
 }
 
+/* BACK BUTTON — ADDED */
+.back-btn{
+  display:inline-block;
+  margin-bottom:16px;
+  padding:10px 14px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:700;
+  color:#000;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+
 /* CARD */
 .card{
   background:var(--panel);
@@ -149,16 +161,19 @@ footer{
 <header>
   <div class="header-inner">
     <img
-  src="https://github.com/twolittlebeesautoparts/OFFICIALPAGE/blob/main/logo.png?raw=true"
-  class="logo"
-  alt="Two Little Bees Auto Parts Logo"
-  onclick="beeSecret()"
-/>
+      src="https://github.com/twolittlebeesautoparts/OFFICIALPAGE/blob/main/logo.png?raw=true"
+      class="logo"
+      alt="Two Little Bees Auto Parts Logo"
+      onclick="beeSecret()"
+    />
     <h2>Two Little Bees – Inventory</h2>
   </div>
 </header>
 
 <main>
+
+<!-- BACK BUTTON — ADDED -->
+<a href="index.html" class="back-btn">← Back</a>
 
 <!-- LOGIN -->
 <div class="card" id="loginCard" style="display:none">
