@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Two Little Bees – Inventory</title>
 
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0f14">
+<meta name="description" content="Two Little Bees Auto Parts inventory — VIN-verified OEM used parts in Indianapolis.">
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -18,31 +22,38 @@
   --text:#f9fafb;
   --muted:#9ca3af;
   --danger:#ff4d4d;
+  --ok:#22c55e;
+  --warn:#f59e0b;
+  --border:rgba(255,255,255,.10);
+  --shadow:0 30px 60px rgba(0,0,0,.55);
+  --radius:18px;
+  --radius2:12px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-
-html,body{
-  width:100%;
-  max-width:100%;
-  overflow-x:hidden;
-}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
 
 body{
   background:
-    radial-gradient(900px 500px at 15% -10%, #1f2937, transparent),
+    radial-gradient(900px 500px at 15% -10%, rgba(244,196,48,.14), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(255,183,3,.10), transparent 60%),
+    radial-gradient(900px 500px at 40% 120%, rgba(31,41,55,.25), transparent 60%),
     var(--bg);
   color:var(--text);
   padding-left:env(safe-area-inset-left);
   padding-right:env(safe-area-inset-right);
+  padding-bottom:calc(env(safe-area-inset-bottom) + 18px);
+  -webkit-font-smoothing:antialiased;
 }
+
+a{color:inherit}
 
 /* HEADER */
 header{
   position:sticky;
   top:0;
   z-index:100;
-  background:rgba(11,15,20,.95);
+  background:rgba(11,15,20,.92);
   backdrop-filter:blur(10px);
   border-bottom:1px solid rgba(255,255,255,.08);
 }
@@ -53,67 +64,189 @@ header{
   padding:12px 16px;
   display:flex;
   align-items:center;
+  justify-content:space-between;
   gap:14px;
+  flex-wrap:wrap;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
 .logo{
-  width:56px;
-  height:56px;
+  width:54px;height:54px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 14px 28px rgba(0,0,0,.28);
+  background:#0f172a;
   cursor:pointer;
+  object-fit:cover;
 }
 
+.titleWrap h2{
+  font-size:1.05rem;
+  letter-spacing:.2px;
+}
+.titleWrap .sub{
+  color:var(--muted);
+  font-size:.85rem;
+  margin-top:2px;
+}
+
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.pill{
+  text-decoration:none;
+  font-weight:950;
+  padding:9px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--text);
+  background:rgba(15,23,42,.55);
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pill.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#000;
+  border:none;
+}
+
+.pill:active{transform:scale(.99)}
+
+/* MAIN */
 main{
   max-width:1200px;
   margin:auto;
-  padding:24px 16px 40px;
-}
-
-/* BACK BUTTON — ADDED */
-.back-btn{
-  display:inline-block;
-  margin-bottom:16px;
-  padding:10px 14px;
-  border-radius:10px;
-  text-decoration:none;
-  font-weight:700;
-  color:#000;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  padding:22px 16px 40px;
 }
 
 /* CARD */
 .card{
-  background:var(--panel);
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), var(--panel);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:var(--radius);
   padding:20px;
-  box-shadow:0 30px 60px rgba(0,0,0,.55);
-  margin-bottom:24px;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+
+.cardHead{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.card h3{font-size:1.05rem}
+.mini{
+  color:var(--muted);
+  font-size:.85rem;
+  font-weight:800;
+}
+
+hr.sep{
+  border:none;
+  height:1px;
+  background:rgba(255,255,255,.10);
+  margin:14px 0;
 }
 
 /* FORMS */
-.row{
+.grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
   gap:10px;
 }
 
-input,button{
+input,button,select{
   background:#0f1422;
   color:#fff;
   border:1px solid rgba(255,255,255,.15);
   padding:12px;
-  border-radius:10px;
+  border-radius:var(--radius2);
+  outline:none;
 }
+
+input:focus,select:focus{
+  border-color:rgba(244,196,48,.65);
+  box-shadow:0 0 0 4px rgba(244,196,48,.14);
+}
+
+button{cursor:pointer;font-weight:950}
+button[disabled]{opacity:.6;cursor:not-allowed}
 
 button.primary{
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;
-  font-weight:900;
   border:none;
 }
 
 button.danger{
   background:var(--danger);
+  border:none;
+  color:#000;
+}
+
+button.ghost{
+  background:rgba(255,255,255,.06);
+}
+
+.note{
+  margin-top:10px;
+  font-size:12px;
+  min-height:18px;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.note .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.18);
+  box-shadow:0 0 0 3px rgba(255,255,255,.06);
+}
+.note.ok{color:var(--ok)}
+.note.ok .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+.note.bad{color:var(--danger)}
+.note.bad .dot{background:var(--danger);box-shadow:0 0 0 3px rgba(255,77,77,.18)}
+.note.warn{color:var(--warn)}
+.note.warn .dot{background:var(--warn);box-shadow:0 0 0 3px rgba(245,158,11,.18)}
+
+/* FILTER BAR */
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:12px;
+}
+
+.toolbar input{
+  flex:1 1 260px;
+}
+
+.chip{
+  padding:9px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(15,23,42,.55);
+  color:var(--text);
+  font-weight:950;
+  cursor:pointer;
+}
+.chip.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#000;
   border:none;
 }
 
@@ -125,25 +258,65 @@ button.danger{
 
 table{
   width:100%;
-  min-width:680px;
+  min-width:760px;
   border-collapse:collapse;
   margin-top:12px;
 }
 
 th,td{
   padding:12px;
-  border-bottom:1px solid rgba(255,255,255,.12);
+  border-bottom:1px solid rgba(255,255,255,.10);
   vertical-align:top;
 }
 
-th{color:var(--accent)}
+th{
+  color:var(--accent);
+  font-weight:950;
+  font-size:.9rem;
+}
+
+td strong{font-weight:950}
 
 .specs{
   font-size:13px;
   color:var(--muted);
   margin-top:4px;
+  line-height:1.35;
 }
 
+.kv{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:8px;
+}
+.tag{
+  font-size:11px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--text);
+  background:rgba(15,23,42,.55);
+  font-weight:900;
+}
+
+/* Small action buttons in table */
+.smallBtn{
+  padding:9px 10px;
+  border-radius:12px;
+  font-weight:950;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+}
+
+.smallBtn.danger{
+  background:var(--danger);
+  border:none;
+  color:#000;
+}
+
+/* ADMIN VISIBILITY */
 .admin-only{display:none}
 
 /* FOOTER */
@@ -153,80 +326,158 @@ footer{
   padding:22px 16px;
   color:var(--muted);
 }
+
+/* TOAST */
+.toast{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(env(safe-area-inset-bottom) + 14px);
+  background:rgba(15,23,42,.92);
+  border:1px solid rgba(255,255,255,.12);
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:12px;
+  color:var(--text);
+  display:none;
+  z-index:9999;
+  box-shadow:0 20px 40px rgba(0,0,0,.45);
+}
+
+/* MOBILE */
+@media(max-width:600px){
+  table{min-width:680px}
+}
 </style>
 </head>
 
 <body>
 
+<div class="toast" id="toast">Copied</div>
+
 <header>
   <div class="header-inner">
-    <img
-      src="https://github.com/twolittlebeesautoparts/OFFICIALPAGE/blob/main/logo.png?raw=true"
-      class="logo"
-      alt="Two Little Bees Auto Parts Logo"
-      onclick="beeSecret()"
-    />
-    <h2>Two Little Bees – Inventory</h2>
+    <div class="brand">
+      <img
+        src="https://github.com/twolittlebeesautoparts/OFFICIALPAGE/blob/main/logo.png?raw=true"
+        class="logo"
+        alt="Two Little Bees Auto Parts Logo"
+        onclick="beeSecret()"
+      />
+      <div class="titleWrap">
+        <h2>Inventory</h2>
+        <div class="sub">Live list • VIN-verified • Indianapolis</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <a class="pill" href="https://twolittlebeesautoparts.github.io/OFFICIALPAGE/">Home</a>
+      <a class="pill primary" href="https://twolittlebeesautoparts.github.io/">Search Inventory</a>
+      <a class="pill admin-only" href="javascript:void(0)" onclick="logout()">Logout</a>
+    </div>
   </div>
 </header>
 
 <main>
 
-<!-- BACK BUTTON — ADDED -->
-<a href="https://twolittlebeesautoparts.github.io/OFFICIALPAGE/" class="back-btn">← Back</a>
-
-<!-- LOGIN -->
-<div class="card" id="loginCard" style="display:none">
-  <h3>Admin Login</h3>
-  <div class="row">
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button class="primary" onclick="login()">Login</button>
+  <!-- LOGIN (hidden until secret tap) -->
+  <div class="card" id="loginCard" style="display:none">
+    <div class="cardHead">
+      <div>
+        <h3>Admin Login</h3>
+        <div class="mini">Tap logo 3 times to open this screen</div>
+      </div>
+    </div>
+    <hr class="sep">
+    <div class="grid">
+      <input id="username" placeholder="Username" autocomplete="username">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="primary" onclick="login()">Login</button>
+    </div>
+    <div id="loginMsg" class="note"><span class="dot"></span><span id="loginMsgText"></span></div>
   </div>
-  <p id="loginMsg" class="specs"></p>
-</div>
 
-<!-- INVENTORY -->
-<div class="card">
-  <h3>Current Inventory</h3>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Vehicle</th>
-          <th>VIN</th>
-          <th class="admin-only">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="inventoryBody"></tbody>
-    </table>
-  </div>
-</div>
+  <!-- INVENTORY -->
+  <div class="card">
+    <div class="cardHead">
+      <div>
+        <h3>Current Inventory</h3>
+        <div class="mini" id="countLine">Loading…</div>
+      </div>
+      <button class="smallBtn admin-only" onclick="scrollToAdmin()">+ Add Vehicle</button>
+    </div>
 
-<!-- ADMIN PANEL -->
-<div class="card admin-only" id="adminPanel">
-  <h3>Add Vehicle</h3>
-  <div class="row">
-    <input id="year" placeholder="Year">
-    <input id="make" placeholder="Brand">
-    <input id="model" placeholder="Model">
-    <input id="vin" placeholder="VIN">
-    <input id="color" placeholder="Color">
-    <input id="engine" placeholder="Engine Size">
-    <input id="transmission" placeholder="Transmission">
-    <input id="drivetrain" placeholder="Drivetrain">
-    <button class="primary" onclick="addCar()">Add Vehicle</button>
+    <div class="toolbar">
+      <input id="search" placeholder="Search year, make, model, VIN, color, engine…" oninput="applyFilters()">
+      <select id="sort" onchange="applyFilters()">
+        <option value="newest">Sort: Newest</option>
+        <option value="oldest">Sort: Oldest</option>
+        <option value="yearDesc">Sort: Year (High → Low)</option>
+        <option value="yearAsc">Sort: Year (Low → High)</option>
+        <option value="makeAsc">Sort: Make (A → Z)</option>
+      </select>
+      <button class="smallBtn ghost" onclick="clearSearch()">Clear</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:46%">Vehicle</th>
+            <th style="width:30%">VIN</th>
+            <th style="width:24%" class="admin-only">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryBody"></tbody>
+      </table>
+    </div>
+
+    <div id="invMsg" class="note"><span class="dot"></span><span id="invMsgText"></span></div>
   </div>
-</div>
+
+  <!-- ADMIN PANEL -->
+  <div class="card admin-only" id="adminPanel">
+    <div class="cardHead">
+      <div>
+        <h3>Add Vehicle</h3>
+        <div class="mini">Tip: VIN should be 17 characters. Fields auto-trim.</div>
+      </div>
+    </div>
+    <hr class="sep">
+
+    <div class="grid">
+      <input id="year" placeholder="Year (e.g. 2017)" inputmode="numeric">
+      <input id="make" placeholder="Make (Brand)">
+      <input id="model" placeholder="Model">
+      <input id="vin" placeholder="VIN (17 chars)" maxlength="17">
+      <input id="color" placeholder="Color">
+      <input id="engine" placeholder="Engine Size (e.g. 3.6L)">
+      <input id="transmission" placeholder="Transmission (Auto / Manual / CVT)">
+      <input id="drivetrain" placeholder="Drivetrain (FWD / RWD / AWD)">
+      <button class="primary" id="addBtn" onclick="addCar()">Add Vehicle</button>
+    </div>
+
+    <div id="adminMsg" class="note"><span class="dot"></span><span id="adminMsgText"></span></div>
+  </div>
 
 </main>
 
 <footer>© 2026 Two Little Bees Auto Parts</footer>
 
 <script>
+/* ======================
+   SECURITY NOTE (IMPORTANT)
+   ======================
+   This page uses a front-end username/password to show/hide admin UI.
+   Anyone can view the code and see ADMIN_USER / ADMIN_PASS.
+   Real protection must be done with Firebase Auth + Firestore security rules.
+   (I’m not changing your architecture here, just upgrading UX + reliability.)
+====================== */
+
 /* ADMIN LOGIN */
 const ADMIN_USER="admin";
 const ADMIN_PASS="bees123";
+
 let isAdmin=false;
 let beeClicks=0;
 
@@ -240,70 +491,316 @@ firebase.initializeApp({
 const db=firebase.firestore();
 const ref=db.collection("inventory");
 
+/* UI refs */
+const loginCard = document.getElementById("loginCard");
+const adminPanel = document.getElementById("adminPanel");
+const inventoryBody = document.getElementById("inventoryBody");
+
+const loginMsg = document.getElementById("loginMsg");
+const loginMsgText = document.getElementById("loginMsgText");
+
+const invMsg = document.getElementById("invMsg");
+const invMsgText = document.getElementById("invMsgText");
+
+const adminMsg = document.getElementById("adminMsg");
+const adminMsgText = document.getElementById("adminMsgText");
+
+const countLine = document.getElementById("countLine");
+const toast = document.getElementById("toast");
+
+/* Filters */
+const searchEl = document.getElementById("search");
+const sortEl = document.getElementById("sort");
+
+let liveCars = [];   // [{id, ...data}]
+let unsub = null;
+
+/* ===== helpers ===== */
+function setNote(el, textEl, msg, type=""){
+  textEl.textContent = msg || "";
+  el.className = "note" + (type ? " " + type : "");
+}
+function showToast(msg){
+  toast.textContent = msg;
+  toast.style.display = "block";
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=> toast.style.display="none", 900);
+}
+function escHtml(str){
+  return String(str ?? "").replace(/[&<>"']/g,(m)=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+  }[m]));
+}
+function clean(str){ return String(str ?? "").trim(); }
+function cleanVIN(v){ return clean(v).toUpperCase().replace(/[^A-Z0-9]/g,""); }
+function validVIN(v){ return v.length === 17 && !/[IOQ]/.test(v); }
+
+function setAdminUI(on){
+  isAdmin = !!on;
+
+  // show admin-only items (table headers + buttons)
+  document.querySelectorAll(".admin-only").forEach(el=>{
+    // table header cells should be table-cell, others block/inline-flex
+    if(el.tagName === "TH" || el.tagName === "TD"){
+      el.style.display = isAdmin ? "table-cell" : "none";
+    }else{
+      // header pills/buttons
+      el.style.display = isAdmin ? "inline-flex" : "none";
+    }
+  });
+
+  // admin panel
+  adminPanel.style.display = isAdmin ? "block" : "none";
+
+  // persist session
+  localStorage.setItem("tlb_admin", isAdmin ? "1" : "0");
+
+  applyFilters();
+}
+
+/* ===== secret logo clicks ===== */
 function beeSecret(){
   beeClicks++;
   if(beeClicks===3){
     loginCard.style.display="block";
+    setNote(loginMsg, loginMsgText, "Enter credentials to enable admin tools.", "");
     beeClicks=0;
   }
-  setTimeout(()=>beeClicks=0,1000);
+  setTimeout(()=>beeClicks=0, 900);
 }
 
+/* ===== login/logout ===== */
 function login(){
-  if(username.value===ADMIN_USER && password.value===ADMIN_PASS){
-    isAdmin=true;
-    document.querySelectorAll('.admin-only')
-      .forEach(e=>e.style.display="table-cell");
-    adminPanel.style.display="block";
+  const u = clean(username.value);
+  const p = clean(password.value);
+
+  if(u===ADMIN_USER && p===ADMIN_PASS){
+    setAdminUI(true);
     loginCard.style.display="none";
-    render();
+    username.value = "";
+    password.value = "";
+    setNote(loginMsg, loginMsgText, "", "");
+    showToast("Admin enabled");
   }else{
-    loginMsg.textContent="Invalid login";
+    setNote(loginMsg, loginMsgText, "Invalid login.", "bad");
   }
 }
 
+function logout(){
+  setAdminUI(false);
+  showToast("Admin disabled");
+}
+
+/* ===== add/remove ===== */
 async function addCar(){
-  await ref.add({
-    year:year.value,
-    make:make.value,
-    model:model.value,
-    vin:vin.value,
-    color:color.value,
-    engine:engine.value,
-    transmission:transmission.value,
-    drivetrain:drivetrain.value
-  });
-  document.querySelectorAll('#adminPanel input')
-    .forEach(i=>i.value="");
+  const y = clean(year.value);
+  const mk = clean(make.value);
+  const md = clean(model.value);
+  const v = cleanVIN(vin.value);
+  const col = clean(color.value);
+  const eng = clean(engine.value);
+  const trn = clean(transmission.value);
+  const drv = clean(drivetrain.value);
+
+  if(!y || !mk || !md){
+    setNote(adminMsg, adminMsgText, "Year, Make, and Model are required.", "warn");
+    return;
+  }
+  if(v && !validVIN(v)){
+    setNote(adminMsg, adminMsgText, "VIN must be 17 chars (no I/O/Q).", "warn");
+    return;
+  }
+
+  addBtn.disabled = true;
+  setNote(adminMsg, adminMsgText, "Saving…", "");
+
+  try{
+    await ref.add({
+      year:y,
+      make:mk,
+      model:md,
+      vin:v,
+      color:col,
+      engine:eng,
+      transmission:trn,
+      drivetrain:drv,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // clear inputs
+    document.querySelectorAll('#adminPanel input').forEach(i=>i.value="");
+    setNote(adminMsg, adminMsgText, "Vehicle added.", "ok");
+    showToast("Added");
+
+  }catch(e){
+    setNote(adminMsg, adminMsgText, "Save failed. Check connection.", "bad");
+  }
+
+  addBtn.disabled = false;
 }
 
 async function removeCar(id){
-  await ref.doc(id).delete();
+  if(!isAdmin) return;
+  if(!confirm("Delete this vehicle?")) return;
+
+  try{
+    await ref.doc(id).delete();
+    showToast("Deleted");
+  }catch{
+    showToast("Delete failed");
+  }
 }
 
-function render(){
-  ref.onSnapshot(s=>{
-    inventoryBody.innerHTML="";
-    s.forEach(d=>{
-      const c=d.data();
-      inventoryBody.innerHTML+=`
-        <tr>
-          <td>
-            <strong>${c.year} ${c.make} ${c.model}</strong>
-            <div class="specs">
-              ${c.color} · ${c.engine} · ${c.transmission} · ${c.drivetrain}
-            </div>
-          </td>
-          <td>${c.vin}</td>
-          ${isAdmin
-            ? `<td><button class="danger" onclick="removeCar('${d.id}')">Delete</button></td>`
-            : ""
-          }
-        </tr>`;
+function scrollToAdmin(){
+  adminPanel.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* ===== live render with snapshot ===== */
+function startListener(){
+  if(unsub) unsub();
+
+  setNote(invMsg, invMsgText, "Loading inventory…", "");
+  countLine.textContent = "Loading…";
+
+  // Prefer newest first using createdAt; fallback works if missing
+  unsub = ref.orderBy("createdAt","desc").onSnapshot(s=>{
+    liveCars = [];
+    s.forEach(doc=>{
+      liveCars.push({ id: doc.id, ...doc.data() });
     });
+
+    countLine.textContent = `${liveCars.length} vehicles`;
+    setNote(invMsg, invMsgText, liveCars.length ? "Tap VIN to copy." : "No vehicles yet.", liveCars.length ? "" : "warn");
+
+    applyFilters();
+  }, (err)=>{
+    setNote(invMsg, invMsgText, "Live sync failed. Check Firestore rules/connection.", "bad");
+    countLine.textContent = "Error";
   });
 }
-render();
+
+/* ===== filters/sort ===== */
+function applyFilters(){
+  const q = clean(searchEl.value).toLowerCase();
+  const sort = sortEl.value;
+
+  let list = liveCars.slice();
+
+  if(q){
+    list = list.filter(c=>{
+      const blob = [
+        c.year, c.make, c.model, c.vin, c.color, c.engine, c.transmission, c.drivetrain
+      ].map(x=>String(x||"").toLowerCase()).join(" ");
+      return blob.includes(q);
+    });
+  }
+
+  // sorting
+  list.sort((a,b)=>{
+    const ay = parseInt(a.year||"0",10) || 0;
+    const by = parseInt(b.year||"0",10) || 0;
+
+    if(sort==="newest") return (b._ts||0) - (a._ts||0);
+    if(sort==="oldest") return (a._ts||0) - (b._ts||0);
+    if(sort==="yearDesc") return by - ay;
+    if(sort==="yearAsc") return ay - by;
+    if(sort==="makeAsc") return String(a.make||"").localeCompare(String(b.make||""));
+    return 0;
+  });
+
+  renderTable(list);
+}
+
+/* derive a sortable timestamp from Firestore Timestamp if present */
+function getMs(t){
+  try{
+    if(!t) return 0;
+    // Firestore Timestamp has toMillis()
+    if(typeof t.toMillis === "function") return t.toMillis();
+    return 0;
+  }catch{return 0;}
+}
+
+function renderTable(list){
+  inventoryBody.innerHTML = "";
+
+  list.forEach(c=>{
+    const createdMs = getMs(c.createdAt);
+    c._ts = createdMs;
+
+    const vehicleLine = `${escHtml(c.year||"")} ${escHtml(c.make||"")} ${escHtml(c.model||"")}`.trim() || "Vehicle";
+    const vinVal = escHtml(c.vin||"");
+
+    const specs = [
+      c.color, c.engine, c.transmission, c.drivetrain
+    ].filter(Boolean).map(escHtml).join(" · ");
+
+    const tags = [];
+    if(c.drivetrain) tags.push(`<span class="tag">${escHtml(c.drivetrain)}</span>`);
+    if(c.transmission) tags.push(`<span class="tag">${escHtml(c.transmission)}</span>`);
+    if(c.engine) tags.push(`<span class="tag">${escHtml(c.engine)}</span>`);
+
+    inventoryBody.insertAdjacentHTML("beforeend", `
+      <tr>
+        <td>
+          <strong>${vehicleLine}</strong>
+          ${specs ? `<div class="specs">${specs}</div>` : ``}
+          ${tags.length ? `<div class="kv">${tags.join("")}</div>` : ``}
+        </td>
+
+        <td>
+          ${vinVal
+            ? `<button class="smallBtn" onclick="copyText('${vinVal}')">Copy VIN</button>
+               <div class="specs" style="margin-top:8px">${vinVal}</div>`
+            : `<div class="specs">—</div>`
+          }
+        </td>
+
+        ${isAdmin
+          ? `<td>
+               <button class="smallBtn danger" onclick="removeCar('${c.id}')">Delete</button>
+             </td>`
+          : ""
+        }
+      </tr>
+    `);
+  });
+}
+
+async function copyText(t){
+  try{
+    await navigator.clipboard.writeText(t);
+    showToast("Copied");
+  }catch{
+    const ta = document.createElement("textarea");
+    ta.value = t;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    showToast("Copied");
+  }
+}
+
+function clearSearch(){
+  searchEl.value = "";
+  applyFilters();
+}
+
+/* ===== restore admin session ===== */
+(function init(){
+  // restore
+  const saved = localStorage.getItem("tlb_admin") === "1";
+  setAdminUI(saved);
+
+  // start listener once
+  startListener();
+
+  // initial notes
+  setNote(invMsg, invMsgText, "Loading inventory…", "");
+  setNote(loginMsg, loginMsgText, "", "");
+  setNote(adminMsg, adminMsgText, "", "");
+})();
 </script>
 
 </body>
