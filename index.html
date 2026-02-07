@@ -253,35 +253,37 @@ button.ghost{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
 
-  /* shorter list + internal scroll */
+  /* ✅ shorter list + internal scroll */
   max-height:520px;
   overflow-y:auto;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.10);
   background:rgba(15,23,42,.18);
 
-  /* ✅ FIX: hide scrollbar but keep scrolling */
-  scrollbar-width:none;              /* Firefox */
+  /* ✅ hide scrollbar (Edge/Windows + others) */
+  -ms-overflow-style:none; /* old MS/Edge */
+  scrollbar-width:none;    /* Firefox */
 }
 .table-wrap::-webkit-scrollbar{
-  width:0px;                         /* Chrome/Edge/Safari */
+  width:0px;
   height:0px;
-}
-
-/* sticky header while scrolling */
-table thead th{
-  position:sticky;
-  top:0;
-  z-index:2;
-  background:rgba(11,15,20,.98);
-  backdrop-filter:blur(8px);
+  display:none; /* Edge/Chromium */
 }
 
 table{
   width:100%;
   min-width:820px;
   border-collapse:collapse;
-  margin-top:0;
+  margin-top:12px;
+}
+
+/* ✅ sticky header (desktop/table mode) */
+table thead th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:rgba(11,15,20,.98);
+  backdrop-filter:blur(8px);
 }
 
 th,td{
@@ -417,10 +419,47 @@ body.is-admin td.admin-cell{ display:table-cell; }
   cursor:pointer;
 }
 
-/* MOBILE */
-@media(max-width:600px){
-  table{min-width:760px}
-  .table-wrap{ max-height:460px; }
+/* ✅ MOBILE: no sideways scroll, stack rows as cards */
+@media(max-width:700px){
+
+  html,body{ overflow-x:hidden; }
+
+  /* prevent side-scroll */
+  .table-wrap{
+    overflow-x:hidden;
+    max-height:none;
+    border:0;
+    background:transparent;
+    padding:0;
+  }
+
+  table{
+    min-width:0 !important;
+    width:100%;
+    margin-top:12px;
+  }
+
+  thead{ display:none; }
+
+  tbody, tr, td{ display:block; width:100%; }
+
+  tr{
+    background:rgba(15,23,42,.35);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    padding:12px;
+    margin:12px 0;
+  }
+
+  td{
+    border:none;
+    padding:0;
+  }
+
+  td + td{ margin-top:12px; }
+
+  /* admin cell should behave as block on mobile when admin */
+  body.is-admin td.admin-cell{ display:block; }
 }
 </style>
 </head>
@@ -1034,15 +1073,13 @@ function renderTable(list){
           }
         </td>
 
-        ${isAdmin
-          ? `<td class="admin-only admin-cell">
-               <div style="display:flex;gap:10px;flex-wrap:wrap">
-                 <button class="smallBtn primary" onclick="openEdit('${c.id}')">Edit</button>
-                 <button class="smallBtn danger" onclick="removeCar('${c.id}')">Delete</button>
-               </div>
-             </td>`
-          : ""
-        }
+        <!-- ✅ always render admin cell (prevents mobile layout issues); still hidden unless admin -->
+        <td class="admin-only admin-cell">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="smallBtn primary" onclick="openEdit('${c.id}')">Edit</button>
+            <button class="smallBtn danger" onclick="removeCar('${c.id}')">Delete</button>
+          </div>
+        </td>
       </tr>
     `);
   });
