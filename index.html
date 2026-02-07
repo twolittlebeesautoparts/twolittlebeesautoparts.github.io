@@ -231,9 +231,7 @@ button.ghost{
   margin-top:12px;
 }
 
-.toolbar input{
-  flex:1 1 260px;
-}
+.toolbar input{ flex:1 1 260px; }
 
 .chip{
   padding:9px 12px;
@@ -258,7 +256,7 @@ button.ghost{
 
 table{
   width:100%;
-  min-width:760px;
+  min-width:820px;
   border-collapse:collapse;
   margin-top:12px;
 }
@@ -300,6 +298,15 @@ td strong{font-weight:950}
   font-weight:900;
 }
 
+.tag.ok{
+  border-color: rgba(34,197,94,.35);
+  background: rgba(34,197,94,.10);
+}
+.tag.bad{
+  border-color: rgba(255,77,77,.35);
+  background: rgba(255,77,77,.10);
+}
+
 /* Small action buttons in table */
 .smallBtn{
   padding:9px 10px;
@@ -316,16 +323,18 @@ td strong{font-weight:950}
   color:#000;
 }
 
-/* ADMIN VISIBILITY */
-.admin-only{display:none}
-
-/* FOOTER */
-footer{
-  border-top:1px solid rgba(255,255,255,.08);
-  text-align:center;
-  padding:22px 16px;
-  color:var(--muted);
+.smallBtn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#000;
+  border:none;
 }
+
+/* ADMIN VISIBILITY (controlled by body.is-admin) */
+.admin-only{ display:none; }
+body.is-admin .admin-flex{ display:inline-flex; }
+body.is-admin .admin-block{ display:block; }
+body.is-admin th.admin-cell,
+body.is-admin td.admin-cell{ display:table-cell; }
 
 /* TOAST */
 .toast{
@@ -344,9 +353,50 @@ footer{
   box-shadow:0 20px 40px rgba(0,0,0,.45);
 }
 
+/* MODAL */
+.modalBack{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  z-index:9998;
+  padding:18px;
+}
+.modal{
+  max-width:780px;
+  margin:6vh auto 0;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), var(--panel);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.modalHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.modalHead h3{ font-size:1.05rem; }
+.modalActions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.xBtn{
+  width:42px;height:42px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  font-weight:950;
+  cursor:pointer;
+}
+
 /* MOBILE */
 @media(max-width:600px){
-  table{min-width:680px}
+  table{min-width:760px}
 }
 </style>
 </head>
@@ -373,7 +423,7 @@ footer{
     <div class="header-actions">
       <a class="pill" href="https://twolittlebeesautoparts.github.io/OFFICIALPAGE/">Home</a>
       <a class="pill primary" href="https://twolittlebeesautoparts.github.io/">Search Inventory</a>
-      <a class="pill admin-only" href="javascript:void(0)" onclick="logout()">Logout</a>
+      <a class="pill admin-only admin-flex" href="javascript:void(0)" onclick="logout()">Logout</a>
     </div>
   </div>
 </header>
@@ -404,7 +454,7 @@ footer{
         <h3>Current Inventory</h3>
         <div class="mini" id="countLine">Loading…</div>
       </div>
-      <button class="smallBtn admin-only" onclick="scrollToAdmin()">+ Add Vehicle</button>
+      <button class="smallBtn admin-only admin-flex" onclick="scrollToAdmin()">+ Add Vehicle</button>
     </div>
 
     <div class="toolbar">
@@ -425,7 +475,7 @@ footer{
           <tr>
             <th style="width:46%">Vehicle</th>
             <th style="width:30%">VIN</th>
-            <th style="width:24%" class="admin-only">Actions</th>
+            <th style="width:24%" class="admin-only admin-cell">Actions</th>
           </tr>
         </thead>
         <tbody id="inventoryBody"></tbody>
@@ -436,7 +486,7 @@ footer{
   </div>
 
   <!-- ADMIN PANEL -->
-  <div class="card admin-only" id="adminPanel">
+  <div class="card admin-only admin-block" id="adminPanel">
     <div class="cardHead">
       <div>
         <h3>Add Vehicle</h3>
@@ -454,6 +504,19 @@ footer{
       <input id="engine" placeholder="Engine Size (e.g. 3.6L)">
       <input id="transmission" placeholder="Transmission (Auto / Manual / CVT)">
       <input id="drivetrain" placeholder="Drivetrain (FWD / RWD / AWD)">
+
+      <!-- NEW: good motor & transmission flags -->
+      <select id="goodMotor">
+        <option value="">Good Motor? (optional)</option>
+        <option value="yes">Yes ✅</option>
+        <option value="no">No ❌</option>
+      </select>
+      <select id="goodTrans">
+        <option value="">Good Transmission? (optional)</option>
+        <option value="yes">Yes ✅</option>
+        <option value="no">No ❌</option>
+      </select>
+
       <button class="primary" id="addBtn" onclick="addCar()">Add Vehicle</button>
     </div>
 
@@ -462,7 +525,54 @@ footer{
 
 </main>
 
-<footer>© 2026 Two Little Bees Auto Parts</footer>
+<footer style="border-top:1px solid rgba(255,255,255,.08);text-align:center;padding:22px 16px;color:var(--muted)">
+  © 2026 Two Little Bees Auto Parts
+</footer>
+
+<!-- EDIT MODAL (admin) -->
+<div class="modalBack admin-only" id="editBack">
+  <div class="modal">
+    <div class="modalHead">
+      <div>
+        <h3>Edit Vehicle</h3>
+        <div class="mini" id="editSub">Update details then hit Save.</div>
+      </div>
+      <button class="xBtn" onclick="closeEdit()">✕</button>
+    </div>
+
+    <hr class="sep">
+
+    <div class="grid">
+      <input id="e_year" placeholder="Year (e.g. 2017)" inputmode="numeric">
+      <input id="e_make" placeholder="Make (Brand)">
+      <input id="e_model" placeholder="Model">
+      <input id="e_vin" placeholder="VIN (17 chars)" maxlength="17">
+      <input id="e_color" placeholder="Color">
+      <input id="e_engine" placeholder="Engine Size (e.g. 3.6L)">
+      <input id="e_transmission" placeholder="Transmission (Auto / Manual / CVT)">
+      <input id="e_drivetrain" placeholder="Drivetrain (FWD / RWD / AWD)">
+
+      <select id="e_goodMotor">
+        <option value="">Good Motor? (optional)</option>
+        <option value="yes">Yes ✅</option>
+        <option value="no">No ❌</option>
+      </select>
+      <select id="e_goodTrans">
+        <option value="">Good Transmission? (optional)</option>
+        <option value="yes">Yes ✅</option>
+        <option value="no">No ❌</option>
+      </select>
+    </div>
+
+    <div class="modalActions">
+      <button class="primary" id="saveBtn" onclick="saveEdit()">Save Changes</button>
+      <button class="ghost" onclick="closeEdit()">Cancel</button>
+      <button class="danger" onclick="deleteFromEdit()">Delete</button>
+    </div>
+
+    <div id="editMsg" class="note"><span class="dot"></span><span id="editMsgText"></span></div>
+  </div>
+</div>
 
 <script>
 /* ======================
@@ -471,7 +581,6 @@ footer{
    This page uses a front-end username/password to show/hide admin UI.
    Anyone can view the code and see ADMIN_USER / ADMIN_PASS.
    Real protection must be done with Firebase Auth + Firestore security rules.
-   (I’m not changing your architecture here, just upgrading UX + reliability.)
 ====================== */
 
 /* ADMIN LOGIN */
@@ -515,6 +624,12 @@ const sortEl = document.getElementById("sort");
 let liveCars = [];   // [{id, ...data}]
 let unsub = null;
 
+/* EDIT MODAL refs */
+const editBack = document.getElementById("editBack");
+const editMsg = document.getElementById("editMsg");
+const editMsgText = document.getElementById("editMsgText");
+let editingId = null;
+
 /* ===== helpers ===== */
 function setNote(el, textEl, msg, type=""){
   textEl.textContent = msg || "";
@@ -534,23 +649,20 @@ function escHtml(str){
 function clean(str){ return String(str ?? "").trim(); }
 function cleanVIN(v){ return clean(v).toUpperCase().replace(/[^A-Z0-9]/g,""); }
 function validVIN(v){ return v.length === 17 && !/[IOQ]/.test(v); }
+function ynToBool(v){
+  if(v==="yes") return true;
+  if(v==="no") return false;
+  return null; // unknown / not set
+}
+function boolToYN(b){
+  if(b===true) return "yes";
+  if(b===false) return "no";
+  return "";
+}
 
 function setAdminUI(on){
   isAdmin = !!on;
-
-  // show admin-only items (table headers + buttons)
-  document.querySelectorAll(".admin-only").forEach(el=>{
-    // table header cells should be table-cell, others block/inline-flex
-    if(el.tagName === "TH" || el.tagName === "TD"){
-      el.style.display = isAdmin ? "table-cell" : "none";
-    }else{
-      // header pills/buttons
-      el.style.display = isAdmin ? "inline-flex" : "none";
-    }
-  });
-
-  // admin panel
-  adminPanel.style.display = isAdmin ? "block" : "none";
+  document.body.classList.toggle("is-admin", isAdmin);
 
   // persist session
   localStorage.setItem("tlb_admin", isAdmin ? "1" : "0");
@@ -588,10 +700,11 @@ function login(){
 
 function logout(){
   setAdminUI(false);
+  closeEdit();
   showToast("Admin disabled");
 }
 
-/* ===== add/remove ===== */
+/* ===== add/remove/edit ===== */
 async function addCar(){
   const y = clean(year.value);
   const mk = clean(make.value);
@@ -601,6 +714,10 @@ async function addCar(){
   const eng = clean(engine.value);
   const trn = clean(transmission.value);
   const drv = clean(drivetrain.value);
+
+  // NEW
+  const gm = ynToBool(document.getElementById("goodMotor").value);
+  const gt = ynToBool(document.getElementById("goodTrans").value);
 
   if(!y || !mk || !md){
     setNote(adminMsg, adminMsgText, "Year, Make, and Model are required.", "warn");
@@ -615,7 +732,7 @@ async function addCar(){
   setNote(adminMsg, adminMsgText, "Saving…", "");
 
   try{
-    await ref.add({
+    const payload = {
       year:y,
       make:mk,
       model:md,
@@ -625,10 +742,18 @@ async function addCar(){
       transmission:trn,
       drivetrain:drv,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    };
+
+    // only store these if user picked yes/no
+    if(gm !== null) payload.goodMotor = gm;
+    if(gt !== null) payload.goodTrans = gt;
+
+    await ref.add(payload);
 
     // clear inputs
     document.querySelectorAll('#adminPanel input').forEach(i=>i.value="");
+    document.getElementById("goodMotor").value = "";
+    document.getElementById("goodTrans").value = "";
     setNote(adminMsg, adminMsgText, "Vehicle added.", "ok");
     showToast("Added");
 
@@ -655,6 +780,120 @@ function scrollToAdmin(){
   adminPanel.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
+/* ===== EDIT FLOW ===== */
+function openEdit(id){
+  if(!isAdmin) return;
+  const car = liveCars.find(x=>x.id===id);
+  if(!car) return;
+
+  editingId = id;
+
+  // fill fields
+  e_year.value = car.year || "";
+  e_make.value = car.make || "";
+  e_model.value = car.model || "";
+  e_vin.value = car.vin || "";
+  e_color.value = car.color || "";
+  e_engine.value = car.engine || "";
+  e_transmission.value = car.transmission || "";
+  e_drivetrain.value = car.drivetrain || "";
+  e_goodMotor.value = boolToYN(car.goodMotor);
+  e_goodTrans.value = boolToYN(car.goodTrans);
+
+  setNote(editMsg, editMsgText, "", "");
+  editBack.style.display = "block";
+}
+
+function closeEdit(){
+  editBack.style.display = "none";
+  editingId = null;
+  setNote(editMsg, editMsgText, "", "");
+}
+
+async function saveEdit(){
+  if(!isAdmin || !editingId) return;
+
+  const y = clean(e_year.value);
+  const mk = clean(e_make.value);
+  const md = clean(e_model.value);
+  const v = cleanVIN(e_vin.value);
+  const col = clean(e_color.value);
+  const eng = clean(e_engine.value);
+  const trn = clean(e_transmission.value);
+  const drv = clean(e_drivetrain.value);
+
+  const gm = ynToBool(e_goodMotor.value);
+  const gt = ynToBool(e_goodTrans.value);
+
+  if(!y || !mk || !md){
+    setNote(editMsg, editMsgText, "Year, Make, and Model are required.", "warn");
+    return;
+  }
+  if(v && !validVIN(v)){
+    setNote(editMsg, editMsgText, "VIN must be 17 chars (no I/O/Q).", "warn");
+    return;
+  }
+
+  saveBtn.disabled = true;
+  setNote(editMsg, editMsgText, "Saving…", "");
+
+  try{
+    const updates = {
+      year:y,
+      make:mk,
+      model:md,
+      vin:v,
+      color:col,
+      engine:eng,
+      transmission:trn,
+      drivetrain:drv
+    };
+
+    // store flags only if yes/no selected, otherwise remove field
+    if(gm === null){
+      updates.goodMotor = firebase.firestore.FieldValue.delete();
+    }else{
+      updates.goodMotor = gm;
+    }
+    if(gt === null){
+      updates.goodTrans = firebase.firestore.FieldValue.delete();
+    }else{
+      updates.goodTrans = gt;
+    }
+
+    await ref.doc(editingId).update(updates);
+    setNote(editMsg, editMsgText, "Saved.", "ok");
+    showToast("Saved");
+    setTimeout(closeEdit, 500);
+
+  }catch(e){
+    setNote(editMsg, editMsgText, "Save failed. Check connection/rules.", "bad");
+  }
+
+  saveBtn.disabled = false;
+}
+
+async function deleteFromEdit(){
+  if(!isAdmin || !editingId) return;
+  if(!confirm("Delete this vehicle?")) return;
+
+  try{
+    await ref.doc(editingId).delete();
+    showToast("Deleted");
+    closeEdit();
+  }catch{
+    showToast("Delete failed");
+  }
+}
+
+/* Close modal on outside click */
+editBack.addEventListener("click",(e)=>{
+  if(e.target === editBack) closeEdit();
+});
+document.addEventListener("keydown",(e)=>{
+  if(e.key === "Escape") closeEdit();
+});
+
 /* ===== live render with snapshot ===== */
 function startListener(){
   if(unsub) unsub();
@@ -662,7 +901,6 @@ function startListener(){
   setNote(invMsg, invMsgText, "Loading inventory…", "");
   countLine.textContent = "Loading…";
 
-  // Prefer newest first using createdAt; fallback works if missing
   unsub = ref.orderBy("createdAt","desc").onSnapshot(s=>{
     liveCars = [];
     s.forEach(doc=>{
@@ -689,7 +927,9 @@ function applyFilters(){
   if(q){
     list = list.filter(c=>{
       const blob = [
-        c.year, c.make, c.model, c.vin, c.color, c.engine, c.transmission, c.drivetrain
+        c.year, c.make, c.model, c.vin, c.color, c.engine, c.transmission, c.drivetrain,
+        (c.goodMotor===true ? "good motor" : c.goodMotor===false ? "bad motor" : ""),
+        (c.goodTrans===true ? "good transmission" : c.goodTrans===false ? "bad transmission" : "")
       ].map(x=>String(x||"").toLowerCase()).join(" ");
       return blob.includes(q);
     });
@@ -715,10 +955,15 @@ function applyFilters(){
 function getMs(t){
   try{
     if(!t) return 0;
-    // Firestore Timestamp has toMillis()
     if(typeof t.toMillis === "function") return t.toMillis();
     return 0;
   }catch{return 0;}
+}
+
+function ynLabel(b, what){
+  if(b===true) return `${what}: Good ✅`;
+  if(b===false) return `${what}: Bad ❌`;
+  return "";
 }
 
 function renderTable(list){
@@ -731,14 +976,23 @@ function renderTable(list){
     const vehicleLine = `${escHtml(c.year||"")} ${escHtml(c.make||"")} ${escHtml(c.model||"")}`.trim() || "Vehicle";
     const vinVal = escHtml(c.vin||"");
 
-    const specs = [
-      c.color, c.engine, c.transmission, c.drivetrain
-    ].filter(Boolean).map(escHtml).join(" · ");
+    const specsArr = [c.color, c.engine, c.transmission, c.drivetrain].filter(Boolean).map(escHtml);
+
+    const gmText = ynLabel(c.goodMotor, "Motor");
+    const gtText = ynLabel(c.goodTrans, "Trans");
+    if(gmText) specsArr.push(escHtml(gmText));
+    if(gtText) specsArr.push(escHtml(gtText));
+
+    const specs = specsArr.join(" · ");
 
     const tags = [];
     if(c.drivetrain) tags.push(`<span class="tag">${escHtml(c.drivetrain)}</span>`);
     if(c.transmission) tags.push(`<span class="tag">${escHtml(c.transmission)}</span>`);
     if(c.engine) tags.push(`<span class="tag">${escHtml(c.engine)}</span>`);
+    if(c.goodMotor===true) tags.push(`<span class="tag ok">Good Motor ✅</span>`);
+    if(c.goodMotor===false) tags.push(`<span class="tag bad">Bad Motor ❌</span>`);
+    if(c.goodTrans===true) tags.push(`<span class="tag ok">Good Trans ✅</span>`);
+    if(c.goodTrans===false) tags.push(`<span class="tag bad">Bad Trans ❌</span>`);
 
     inventoryBody.insertAdjacentHTML("beforeend", `
       <tr>
@@ -757,8 +1011,11 @@ function renderTable(list){
         </td>
 
         ${isAdmin
-          ? `<td>
-               <button class="smallBtn danger" onclick="removeCar('${c.id}')">Delete</button>
+          ? `<td class="admin-only admin-cell">
+               <div style="display:flex;gap:10px;flex-wrap:wrap">
+                 <button class="smallBtn primary" onclick="openEdit('${c.id}')">Edit</button>
+                 <button class="smallBtn danger" onclick="removeCar('${c.id}')">Delete</button>
+               </div>
              </td>`
           : ""
         }
@@ -789,14 +1046,11 @@ function clearSearch(){
 
 /* ===== restore admin session ===== */
 (function init(){
-  // restore
   const saved = localStorage.getItem("tlb_admin") === "1";
   setAdminUI(saved);
 
-  // start listener once
   startListener();
 
-  // initial notes
   setNote(invMsg, invMsgText, "Loading inventory…", "");
   setNote(loginMsg, loginMsgText, "", "");
   setNote(adminMsg, adminMsgText, "", "");
