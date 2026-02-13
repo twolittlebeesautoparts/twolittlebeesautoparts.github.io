@@ -86,7 +86,7 @@ header{
 
 .logo{
   width:64px;
-  height:64px; /* ✅ fixed */
+  height:64px;
   background:transparent !important;
   border:none !important;
   box-shadow:none !important;
@@ -430,7 +430,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
   cursor:pointer;
 }
 
-/* ✅ Photo square scroller */
+/* ✅ Photo square scroller (FIXED: scroll + click) */
 .gallery{
   display:flex;
   align-items:flex-start;
@@ -456,10 +456,17 @@ body.is-admin td.admin-cell{ display:table-cell; }
   height:100%;
   display:flex;
   overflow-x:auto;
+  overflow-y:hidden;
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
+
+  /* ✅ important */
+  touch-action:pan-x;
+  cursor:grab;
 }
+.photoTrack:active{ cursor:grabbing; }
+
 .photoTrack::-webkit-scrollbar{display:none}
 .photoTrack img{
   width:112px;
@@ -469,7 +476,12 @@ body.is-admin td.admin-cell{ display:table-cell; }
   scroll-snap-align:start;
   user-select:none;
   -webkit-user-drag:none;
+
+  /* ✅ clickable */
+  pointer-events:auto;
+  cursor:pointer;
 }
+
 .photoFallback{
   width:100%;
   height:100%;
@@ -481,6 +493,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
   font-size:12px;
   letter-spacing:.2px;
 }
+
 .photoBadge{
   position:absolute;
   top:8px;
@@ -494,6 +507,9 @@ body.is-admin td.admin-cell{ display:table-cell; }
   color:#fff;
   backdrop-filter:blur(8px);
   display:none;
+
+  /* ✅ don't block clicks */
+  pointer-events:none;
 }
 .photoSquare.hasPhotos .photoBadge{display:inline-block}
 .photoBadge span{color:rgba(244,196,48,.95)}
@@ -503,6 +519,42 @@ body.is-admin td.admin-cell{ display:table-cell; }
   gap:10px;
   flex-wrap:wrap;
   align-items:center;
+}
+
+/* PHOTO VIEWER */
+.photoViewer{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.photoViewerTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.photoViewerImgWrap{
+  width:100%;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  overflow:hidden;
+  background:rgba(255,255,255,.04);
+  max-height:70vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#photoView{
+  max-width:100%;
+  max-height:70vh;
+  object-fit:contain;
+  display:block;
+}
+.photoViewerNav{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
 /* ✅ MOBILE: stack as cards */
@@ -633,7 +685,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
     <div class="cardHead">
       <div>
         <h3>Add Vehicle</h3>
-        <div class="mini">Add mileage + photo URLs (comma-separated) for the new side-scroll square.</div>
+        <div class="mini">Tip: paste VIN and it will auto-fill Year/Make/Model + more.</div>
       </div>
     </div>
     <hr class="sep">
@@ -643,7 +695,10 @@ body.is-admin td.admin-cell{ display:table-cell; }
       <input id="make" placeholder="Make (Brand)">
       <input id="model" placeholder="Model">
       <input id="mileage" placeholder="Mileage (e.g. 128000)" inputmode="numeric">
+
       <input id="vin" placeholder="VIN (17 chars)" maxlength="17">
+      <button class="ghost" type="button" onclick="autoFillFromVIN(false)">Auto-Fill from VIN</button>
+
       <input id="color" placeholder="Color">
       <input id="engine" placeholder="Engine Size (e.g. 3.6L)">
       <input id="transmission" placeholder="Transmission (Auto / Manual / CVT)">
@@ -692,7 +747,10 @@ body.is-admin td.admin-cell{ display:table-cell; }
       <input id="e_make" placeholder="Make (Brand)">
       <input id="e_model" placeholder="Model">
       <input id="e_mileage" placeholder="Mileage (e.g. 128000)" inputmode="numeric">
+
       <input id="e_vin" placeholder="VIN (17 chars)" maxlength="17">
+      <button class="ghost" type="button" onclick="autoFillFromVIN(true)">Auto-Fill from VIN</button>
+
       <input id="e_color" placeholder="Color">
       <input id="e_engine" placeholder="Engine Size (e.g. 3.6L)">
       <input id="e_transmission" placeholder="Transmission (Auto / Manual / CVT)">
@@ -719,6 +777,34 @@ body.is-admin td.admin-cell{ display:table-cell; }
     </div>
 
     <div id="editMsg" class="note"><span class="dot"></span><span id="editMsgText"></span></div>
+  </div>
+</div>
+
+<!-- PHOTO VIEWER (anyone can use) -->
+<div class="modalBack" id="photoBack">
+  <div class="modal">
+    <div class="photoViewer">
+      <div class="photoViewerTop">
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:950">Photo Viewer</h3>
+          <div class="mini" id="photoSub">—</div>
+        </div>
+        <button class="xBtn" onclick="closePhoto()">✕</button>
+      </div>
+
+      <div class="photoViewerImgWrap">
+        <img id="photoView" alt="Vehicle photo">
+      </div>
+
+      <div class="photoViewerNav">
+        <button class="smallBtn ghost" onclick="prevPhoto()">◀ Prev</button>
+        <button class="smallBtn ghost" onclick="nextPhoto()">Next ▶</button>
+        <button class="smallBtn" onclick="openPhotoInNewTab()">Open in new tab</button>
+        <button class="smallBtn ghost" onclick="copyCurrentPhotoUrl()">Copy URL</button>
+      </div>
+
+      <div class="note" id="photoMsg"><span class="dot"></span><span id="photoMsgText"></span></div>
+    </div>
   </div>
 </div>
 
@@ -778,6 +864,16 @@ const editBack = document.getElementById("editBack");
 const editMsg = document.getElementById("editMsg");
 const editMsgText = document.getElementById("editMsgText");
 let editingId = null;
+
+/* PHOTO VIEWER refs */
+const photoBack = document.getElementById("photoBack");
+const photoView = document.getElementById("photoView");
+const photoSub = document.getElementById("photoSub");
+const photoMsg = document.getElementById("photoMsg");
+const photoMsgText = document.getElementById("photoMsgText");
+
+let __photosByCarId = {}; // { id: [url,url] }
+let __currentPhoto = { carId:null, idx:0 };
 
 /* ===== helpers ===== */
 function setNote(el, textEl, msg, type=""){
@@ -874,6 +970,210 @@ function logout(){
   showToast("Admin disabled");
 }
 
+/* =========================
+   ✅ VIN AUTO-FILL (VPIC)
+   ========================= */
+async function decodeVIN(vin){
+  const url = `https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvaluesextended/${encodeURIComponent(vin)}?format=json`;
+  const r = await fetch(url, { cache:"no-store" });
+  if(!r.ok) throw new Error("VIN lookup failed");
+  const j = await r.json();
+  const row = j && j.Results && j.Results[0] ? j.Results[0] : null;
+  if(!row) throw new Error("No VIN data");
+
+  // Sometimes VPIC returns errors but still gives partial fields.
+  const year = clean(row.ModelYear);
+  const make = clean(row.Make);
+  const model = clean(row.Model);
+
+  // Engine: prefer DisplacementL if available
+  let engine = "";
+  const dispL = clean(row.DisplacementL);
+  if(dispL && dispL !== "0") engine = `${dispL}L`;
+  else engine = clean(row.EngineModel) || clean(row.EngineCylinders ? `${row.EngineCylinders} Cyl` : "");
+
+  // Transmission / Drive
+  const transmission = clean(row.TransmissionStyle) || clean(row.TransmissionSpeeds ? `${row.TransmissionSpeeds}-Speed` : "");
+  const drivetrain = clean(row.DriveType);
+
+  return { year, make, model, engine, transmission, drivetrain, raw: row };
+}
+
+// fills either admin form or edit form
+async function autoFillFromVIN(isEdit){
+  const vinEl = isEdit ? document.getElementById("e_vin") : document.getElementById("vin");
+  const v = cleanVIN(vinEl.value);
+
+  const msgEl = isEdit ? editMsg : adminMsg;
+  const msgTextEl = isEdit ? editMsgText : adminMsgText;
+
+  if(!validVIN(v)){
+    setNote(msgEl, msgTextEl, "VIN must be 17 chars (no I/O/Q) to auto-fill.", "warn");
+    return;
+  }
+
+  setNote(msgEl, msgTextEl, "Decoding VIN…", "");
+  try{
+    const d = await decodeVIN(v);
+
+    // only fill if VPIC gave something
+    const yEl = isEdit ? e_year : year;
+    const mkEl = isEdit ? e_make : make;
+    const mdEl = isEdit ? e_model : model;
+    const engEl = isEdit ? e_engine : engine;
+    const trnEl = isEdit ? e_transmission : transmission;
+    const drvEl = isEdit ? e_drivetrain : drivetrain;
+
+    if(d.year) yEl.value = d.year;
+    if(d.make) mkEl.value = d.make;
+    if(d.model) mdEl.value = d.model;
+
+    // fill these if empty OR if we got strong values
+    if(d.engine && !clean(engEl.value)) engEl.value = d.engine;
+    if(d.transmission && !clean(trnEl.value)) trnEl.value = d.transmission;
+    if(d.drivetrain && !clean(drvEl.value)) drvEl.value = d.drivetrain;
+
+    setNote(msgEl, msgTextEl, `Auto-filled from VIN: ${[d.year,d.make,d.model].filter(Boolean).join(" ") || "done"}.`, "ok");
+    showToast("VIN Auto-Fill");
+
+  }catch(e){
+    setNote(msgEl, msgTextEl, "VIN auto-fill failed. Try again (or the VIN may be invalid).", "bad");
+  }
+}
+
+// auto-trigger when VIN reaches 17 chars
+function hookVinAutoFill(){
+  const vinInput = document.getElementById("vin");
+  const eVinInput = document.getElementById("e_vin");
+
+  vinInput.addEventListener("input", ()=>{
+    const v = cleanVIN(vinInput.value);
+    vinInput.value = v;
+    if(v.length === 17 && validVIN(v)) autoFillFromVIN(false);
+  });
+
+  eVinInput.addEventListener("input", ()=>{
+    const v = cleanVIN(eVinInput.value);
+    eVinInput.value = v;
+    if(v.length === 17 && validVIN(v)) autoFillFromVIN(true);
+  });
+}
+
+/* =========================
+   ✅ PHOTO CLICK + SCROLL FIX
+   ========================= */
+
+// desktop drag-to-scroll for the tiny photo scroller
+function enableDragScroll(el){
+  let isDown=false, startX=0, startLeft=0;
+
+  el.addEventListener("mousedown",(e)=>{
+    isDown=true;
+    startX=e.pageX;
+    startLeft=el.scrollLeft;
+    el.style.cursor="grabbing";
+    e.preventDefault();
+  });
+  window.addEventListener("mouseup",()=>{
+    if(!isDown) return;
+    isDown=false;
+    el.style.cursor="grab";
+  });
+  el.addEventListener("mouseleave",()=>{
+    if(!isDown) return;
+    isDown=false;
+    el.style.cursor="grab";
+  });
+  el.addEventListener("mousemove",(e)=>{
+    if(!isDown) return;
+    const dx = e.pageX - startX;
+    el.scrollLeft = startLeft - dx;
+  });
+
+  // also allow wheel horizontal on desktop trackpads/mice
+  el.addEventListener("wheel",(e)=>{
+    if(Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // already horizontal
+    if(el.scrollWidth <= el.clientWidth) return;
+    el.scrollLeft += e.deltaY;
+    e.preventDefault();
+  }, { passive:false });
+}
+
+function openPhoto(carId, idx){
+  const arr = __photosByCarId[carId] || [];
+  if(!arr.length) return;
+
+  __currentPhoto.carId = carId;
+  __currentPhoto.idx = Math.max(0, Math.min(idx, arr.length-1));
+
+  photoBack.style.display = "block";
+  setNote(photoMsg, photoMsgText, "Swipe on phone, or use Prev/Next.", "");
+  renderPhoto();
+}
+
+function renderPhoto(){
+  const arr = __photosByCarId[__currentPhoto.carId] || [];
+  if(!arr.length){
+    closePhoto();
+    return;
+  }
+  const url = arr[__currentPhoto.idx];
+  photoView.src = url;
+  photoSub.textContent = `Photo ${__currentPhoto.idx+1} of ${arr.length}`;
+}
+
+function closePhoto(){
+  photoBack.style.display = "none";
+  photoView.src = "";
+  __currentPhoto = { carId:null, idx:0 };
+}
+
+function nextPhoto(){
+  const arr = __photosByCarId[__currentPhoto.carId] || [];
+  if(!arr.length) return;
+  __currentPhoto.idx = (__currentPhoto.idx + 1) % arr.length;
+  renderPhoto();
+}
+function prevPhoto(){
+  const arr = __photosByCarId[__currentPhoto.carId] || [];
+  if(!arr.length) return;
+  __currentPhoto.idx = (__currentPhoto.idx - 1 + arr.length) % arr.length;
+  renderPhoto();
+}
+function openPhotoInNewTab(){
+  const arr = __photosByCarId[__currentPhoto.carId] || [];
+  if(!arr.length) return;
+  window.open(arr[__currentPhoto.idx], "_blank");
+}
+async function copyCurrentPhotoUrl(){
+  const arr = __photosByCarId[__currentPhoto.carId] || [];
+  if(!arr.length) return;
+  const url = arr[__currentPhoto.idx];
+  await copyText(url);
+  showToast("Photo URL copied");
+}
+
+// swipe support inside viewer
+let _swipeX=null;
+photoView.addEventListener("touchstart",(e)=>{
+  _swipeX = e.touches && e.touches[0] ? e.touches[0].clientX : null;
+},{passive:true});
+photoView.addEventListener("touchend",(e)=>{
+  if(_swipeX === null) return;
+  const endX = e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : null;
+  if(endX === null) return;
+  const dx = endX - _swipeX;
+  _swipeX = null;
+  if(Math.abs(dx) < 40) return;
+  if(dx < 0) nextPhoto();
+  else prevPhoto();
+},{passive:true});
+
+// close photo modal outside click
+photoBack.addEventListener("click",(e)=>{
+  if(e.target === photoBack) closePhoto();
+});
+
 /* ===== add/remove/edit ===== */
 async function addCar(){
   const y = clean(year.value);
@@ -892,7 +1192,7 @@ async function addCar(){
   const photos = parsePhotoUrls(document.getElementById("photoUrls").value);
 
   if(!y || !mk || !md){
-    setNote(adminMsg, adminMsgText, "Year, Make, and Model are required.", "warn");
+    setNote(adminMsg, adminMsgText, "Year, Make, and Model are required. (Tip: paste VIN to auto-fill.)", "warn");
     return;
   }
   if(v && !validVIN(v)){
@@ -1077,7 +1377,10 @@ editBack.addEventListener("click",(e)=>{
   if(e.target === editBack) closeEdit();
 });
 document.addEventListener("keydown",(e)=>{
-  if(e.key === "Escape") closeEdit();
+  if(e.key === "Escape"){
+    closeEdit();
+    closePhoto();
+  }
 });
 
 /* ===== live render with snapshot ===== */
@@ -1148,6 +1451,9 @@ function applyFilters(){
   });
 
   renderTable(list);
+
+  // ✅ after render: enable drag-scroll on each photoTrack
+  document.querySelectorAll(".photoTrack").forEach(enableDragScroll);
 }
 
 /* derive a sortable timestamp from Firestore Timestamp if present */
@@ -1165,8 +1471,10 @@ function ynLabel(b, what){
   return "";
 }
 
-function buildPhotoSquare(photos){
+function buildPhotoSquare(carId, photos){
   const arr = Array.isArray(photos) ? photos.filter(Boolean) : [];
+  __photosByCarId[carId] = arr;
+
   if(!arr.length){
     return `
       <div class="photoSquare">
@@ -1175,9 +1483,10 @@ function buildPhotoSquare(photos){
     `;
   }
 
-  const imgs = arr.map(u=>{
+  const imgs = arr.map((u,i)=>{
     const safe = escHtml(u);
-    return `<img src="${safe}" alt="Vehicle photo" loading="lazy" onerror="this.style.display='none'">`;
+    // ✅ click opens viewer
+    return `<img src="${safe}" alt="Vehicle photo" loading="lazy" onclick="openPhoto('${carId}', ${i})" onerror="this.style.display='none'">`;
   }).join("");
 
   return `
@@ -1217,7 +1526,7 @@ function renderTable(list){
     if(c.goodTrans===true) tags.push(`<span class="tag ok">Good Trans ✅</span>`);
     if(c.goodTrans===false) tags.push(`<span class="tag bad">Bad Trans ❌</span>`);
 
-    const photoSquare = buildPhotoSquare(c.photos);
+    const photoSquare = buildPhotoSquare(c.id, c.photos);
 
     inventoryBody.insertAdjacentHTML("beforeend", `
       <tr>
@@ -1281,6 +1590,7 @@ function clearSearch(){
   const saved = localStorage.getItem("tlb_admin") === "1";
   setAdminUI(saved);
 
+  hookVinAutoFill();     // ✅ VIN autofill hooked
   startListener();
 
   setNote(invMsg, invMsgText, "Loading inventory…", "");
