@@ -15,8 +15,9 @@
 <style>
 :root{
   --bg:#0b0f14;
-  --panel:#111827;
+  --panel:#101826;
   --panel-soft:#0f172a;
+  --card:#0d1626;
   --accent:#f4c430;
   --accent2:#ffb703;
   --text:#f9fafb;
@@ -25,19 +26,23 @@
   --ok:#22c55e;
   --warn:#f59e0b;
   --border:rgba(255,255,255,.10);
-  --shadow:0 30px 60px rgba(0,0,0,.55);
+  --shadow:0 30px 70px rgba(0,0,0,.60);
   --radius:18px;
-  --radius2:12px;
+  --radius2:14px;
+  --glass:rgba(11,15,20,.72);
 }
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 html,body{width:100%;max-width:100%;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(244,196,48,.22)}
 
 body{
   background:
-    radial-gradient(900px 500px at 15% -10%, rgba(244,196,48,.14), transparent 60%),
-    radial-gradient(900px 500px at 90% 10%, rgba(255,183,3,.10), transparent 60%),
-    radial-gradient(900px 500px at 40% 120%, rgba(31,41,55,.25), transparent 60%),
+    radial-gradient(1000px 600px at 15% -10%, rgba(244,196,48,.16), transparent 60%),
+    radial-gradient(1000px 600px at 90% 0%, rgba(255,183,3,.12), transparent 60%),
+    radial-gradient(900px 500px at 40% 115%, rgba(31,41,55,.28), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.02), transparent 22%),
     var(--bg);
   color:var(--text);
   padding-left:env(safe-area-inset-left);
@@ -46,15 +51,18 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-a{color:inherit}
+@media (prefers-reduced-motion:no-preference){
+  .lift{transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
+  .lift:hover{transform:translateY(-2px); box-shadow:0 40px 85px rgba(0,0,0,.62); border-color:rgba(244,196,48,.30)}
+}
 
 /* HEADER */
 header{
   position:sticky;
   top:0;
   z-index:100;
-  background:rgba(11,15,20,.92);
-  backdrop-filter:blur(10px);
+  background:rgba(11,15,20,.88);
+  backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 
@@ -73,36 +81,31 @@ header{
   display:flex;
   align-items:center;
   gap:12px;
+  min-width:240px;
 }
 
-/* ✅ LOGO: NO BACKGROUND */
 .logo{
-  width:150px;
-  height:px;
-
-  /* remove the “box” behind it */
+  width:64px;
+  height:64px; /* ✅ fixed */
   background:transparent !important;
   border:none !important;
   box-shadow:none !important;
-
-  /* keep the image clean */
-  border-radius:0;               /* if you want rounded logo, change to 12px */
-  object-fit:contain;            /* contain = no crop */
+  border-radius:0;
+  object-fit:contain;
   display:block;
   cursor:pointer;
-
-  /* helps PNG edges look clean */
   image-rendering:auto;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));
 }
 
-/* Optional: slightly bigger on mobile without making header huge */
 @media(max-width:700px){
-  .logo{ width:60px; height:60px; }
+  .logo{ width:58px; height:58px; }
 }
 
 .titleWrap h2{
   font-size:1.05rem;
   letter-spacing:.2px;
+  font-weight:950;
 }
 .titleWrap .sub{
   color:var(--muted);
@@ -134,22 +137,24 @@ header{
   color:#000;
   border:none;
 }
-
 .pill:active{transform:scale(.99)}
 
 /* MAIN */
 main{
   max-width:1200px;
   margin:auto;
-  padding:22px 16px 40px;
+  padding:22px 16px 42px;
 }
 
 /* CARD */
 .card{
-  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), var(--panel);
+  background:
+    radial-gradient(700px 280px at 0% 0%, rgba(244,196,48,.09), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
+    var(--panel);
   border:1px solid rgba(255,255,255,.14);
   border-radius:var(--radius);
-  padding:20px;
+  padding:18px;
   box-shadow:var(--shadow);
   margin-bottom:18px;
 }
@@ -162,7 +167,7 @@ main{
   flex-wrap:wrap;
 }
 
-.card h3{font-size:1.05rem}
+.card h3{font-size:1.05rem; font-weight:950}
 .mini{
   color:var(--muted);
   font-size:.85rem;
@@ -179,11 +184,11 @@ hr.sep{
 /* FORMS */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   gap:10px;
 }
 
-input,button,select{
+input,button,select,textarea{
   background:#0f1422;
   color:#fff;
   border:1px solid rgba(255,255,255,.15);
@@ -192,7 +197,10 @@ input,button,select{
   outline:none;
 }
 
-input:focus,select:focus{
+textarea{min-height:44px; resize:vertical}
+input::placeholder, textarea::placeholder{color:rgba(156,163,175,.85)}
+
+input:focus,select:focus,textarea:focus{
   border-color:rgba(244,196,48,.65);
   box-shadow:0 0 0 4px rgba(244,196,48,.14);
 }
@@ -247,57 +255,47 @@ button.ghost{
 }
 .toolbar input{ flex:1 1 260px; }
 
-.chip{
-  padding:9px 12px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(15,23,42,.55);
-  color:var(--text);
-  font-weight:950;
-  cursor:pointer;
+.smallHint{
+  font-size:12px;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
-.chip.active{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#000;
-  border:none;
+.pulseDot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(244,196,48,.85);
+  box-shadow:0 0 0 6px rgba(244,196,48,.12);
 }
 
 /* TABLE */
 .table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
-
-  /* ✅ shorter list + internal scroll */
-  max-height:520px;
+  max-height:560px;
   overflow-y:auto;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.10);
-  background:rgba(15,23,42,.18);
+  background:rgba(15,23,42,.16);
 
-  /* ✅ hide scrollbar (Edge/Windows + others) */
-  -ms-overflow-style:none; /* old MS/Edge */
-  scrollbar-width:none;    /* Firefox */
+  -ms-overflow-style:none;
+  scrollbar-width:none;
 }
-.table-wrap::-webkit-scrollbar{
-  width:0px;
-  height:0px;
-  display:none; /* Edge/Chromium */
-}
+.table-wrap::-webkit-scrollbar{width:0;height:0;display:none}
 
 table{
   width:100%;
-  min-width:820px;
+  min-width:880px;
   border-collapse:collapse;
   margin-top:12px;
 }
 
-/* ✅ sticky header (desktop/table mode) */
 table thead th{
   position:sticky;
   top:0;
   z-index:2;
-  background:rgba(11,15,20,.98);
-  backdrop-filter:blur(8px);
+  background:rgba(11,15,20,.96);
+  backdrop-filter:blur(10px);
 }
 
 th,td{
@@ -345,6 +343,11 @@ td strong{font-weight:950}
   border-color: rgba(255,77,77,.35);
   background: rgba(255,77,77,.10);
 }
+.tag.miles{
+  border-color: rgba(244,196,48,.35);
+  background: rgba(244,196,48,.10);
+  color:#fff;
+}
 
 /* Small action buttons in table */
 .smallBtn{
@@ -355,20 +358,11 @@ td strong{font-weight:950}
   background:rgba(255,255,255,.06);
   color:var(--text);
 }
+.smallBtn:active{transform:scale(.99)}
+.smallBtn.danger{background:var(--danger);border:none;color:#000}
+.smallBtn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none}
 
-.smallBtn.danger{
-  background:var(--danger);
-  border:none;
-  color:#000;
-}
-
-.smallBtn.primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#000;
-  border:none;
-}
-
-/* ADMIN VISIBILITY (controlled by body.is-admin) */
+/* ADMIN VISIBILITY */
 .admin-only{ display:none; }
 body.is-admin .admin-flex{ display:inline-flex; }
 body.is-admin .admin-block{ display:block; }
@@ -402,9 +396,12 @@ body.is-admin td.admin-cell{ display:table-cell; }
   padding:18px;
 }
 .modal{
-  max-width:780px;
+  max-width:820px;
   margin:6vh auto 0;
-  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), var(--panel);
+  background:
+    radial-gradient(700px 300px at 0% 0%, rgba(244,196,48,.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
+    var(--panel);
   border:1px solid rgba(255,255,255,.14);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
@@ -416,7 +413,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
   justify-content:space-between;
   gap:12px;
 }
-.modalHead h3{ font-size:1.05rem; }
+.modalHead h3{ font-size:1.05rem; font-weight:950 }
 .modalActions{
   display:flex;
   gap:10px;
@@ -433,12 +430,85 @@ body.is-admin td.admin-cell{ display:table-cell; }
   cursor:pointer;
 }
 
-/* ✅ MOBILE: no sideways scroll, stack rows as cards */
-@media(max-width:700px){
+/* ✅ Photo square scroller */
+.gallery{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
 
+.photoSquare{
+  width:112px;
+  height:112px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(120px 120px at 30% 20%, rgba(244,196,48,.14), transparent 60%),
+    rgba(255,255,255,.04);
+  overflow:hidden;
+  position:relative;
+  flex:0 0 auto;
+  box-shadow:0 18px 40px rgba(0,0,0,.35);
+}
+
+.photoTrack{
+  width:100%;
+  height:100%;
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.photoTrack::-webkit-scrollbar{display:none}
+.photoTrack img{
+  width:112px;
+  height:112px;
+  object-fit:cover;
+  flex:0 0 auto;
+  scroll-snap-align:start;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+.photoFallback{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:rgba(156,163,175,.95);
+  font-weight:950;
+  font-size:12px;
+  letter-spacing:.2px;
+}
+.photoBadge{
+  position:absolute;
+  top:8px;
+  left:8px;
+  padding:6px 8px;
+  border-radius:999px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:11px;
+  font-weight:950;
+  color:#fff;
+  backdrop-filter:blur(8px);
+  display:none;
+}
+.photoSquare.hasPhotos .photoBadge{display:inline-block}
+.photoBadge span{color:rgba(244,196,48,.95)}
+
+.copyLine{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+/* ✅ MOBILE: stack as cards */
+@media(max-width:700px){
   html,body{ overflow-x:hidden; }
 
-  /* prevent side-scroll */
   .table-wrap{
     overflow-x:hidden;
     max-height:none;
@@ -447,33 +517,24 @@ body.is-admin td.admin-cell{ display:table-cell; }
     padding:0;
   }
 
-  table{
-    min-width:0 !important;
-    width:100%;
-    margin-top:12px;
-  }
-
+  table{ min-width:0 !important; width:100%; margin-top:12px; }
   thead{ display:none; }
-
   tbody, tr, td{ display:block; width:100%; }
 
   tr{
     background:rgba(15,23,42,.35);
     border:1px solid rgba(255,255,255,.12);
-    border-radius:14px;
+    border-radius:16px;
     padding:12px;
     margin:12px 0;
   }
 
-  td{
-    border:none;
-    padding:0;
-  }
-
+  td{ border:none; padding:0; }
   td + td{ margin-top:12px; }
-
-  /* admin cell should behave as block on mobile when admin */
   body.is-admin td.admin-cell{ display:block; }
+
+  .photoSquare{ width:104px; height:104px; }
+  .photoTrack img{ width:104px; height:104px; }
 }
 </style>
 </head>
@@ -508,7 +569,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 <main>
 
   <!-- LOGIN (hidden until secret tap) -->
-  <div class="card" id="loginCard" style="display:none">
+  <div class="card lift" id="loginCard" style="display:none">
     <div class="cardHead">
       <div>
         <h3>Admin Login</h3>
@@ -525,23 +586,28 @@ body.is-admin td.admin-cell{ display:table-cell; }
   </div>
 
   <!-- INVENTORY -->
-  <div class="card">
+  <div class="card lift">
     <div class="cardHead">
       <div>
         <h3>Current Inventory</h3>
         <div class="mini" id="countLine">Loading…</div>
       </div>
-      <button class="smallBtn admin-only admin-flex" onclick="scrollToAdmin()">+ Add Vehicle</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="smallHint"><span class="pulseDot"></span><span id="liveHint">Live sync on</span></div>
+        <button class="smallBtn admin-only admin-flex" onclick="scrollToAdmin()">+ Add Vehicle</button>
+      </div>
     </div>
 
     <div class="toolbar">
-      <input id="search" placeholder="Search year, make, model, VIN, color, engine…" oninput="applyFilters()">
+      <input id="search" placeholder="Search year, make, model, VIN, color, engine, mileage…" oninput="applyFilters()">
       <select id="sort" onchange="applyFilters()">
         <option value="newest">Sort: Newest</option>
         <option value="oldest">Sort: Oldest</option>
         <option value="yearDesc">Sort: Year (High → Low)</option>
         <option value="yearAsc">Sort: Year (Low → High)</option>
         <option value="makeAsc">Sort: Make (A → Z)</option>
+        <option value="milesAsc">Sort: Mileage (Low → High)</option>
+        <option value="milesDesc">Sort: Mileage (High → Low)</option>
       </select>
       <button class="smallBtn ghost" onclick="clearSearch()">Clear</button>
     </div>
@@ -550,9 +616,9 @@ body.is-admin td.admin-cell{ display:table-cell; }
       <table>
         <thead>
           <tr>
-            <th style="width:46%">Vehicle</th>
-            <th style="width:30%">VIN</th>
-            <th style="width:24%" class="admin-only admin-cell">Actions</th>
+            <th style="width:58%">Vehicle</th>
+            <th style="width:22%">VIN</th>
+            <th style="width:20%" class="admin-only admin-cell">Actions</th>
           </tr>
         </thead>
         <tbody id="inventoryBody"></tbody>
@@ -563,11 +629,11 @@ body.is-admin td.admin-cell{ display:table-cell; }
   </div>
 
   <!-- ADMIN PANEL -->
-  <div class="card admin-only admin-block" id="adminPanel">
+  <div class="card admin-only admin-block lift" id="adminPanel">
     <div class="cardHead">
       <div>
         <h3>Add Vehicle</h3>
-        <div class="mini">Tip: VIN should be 17 characters. Fields auto-trim.</div>
+        <div class="mini">Add mileage + photo URLs (comma-separated) for the new side-scroll square.</div>
       </div>
     </div>
     <hr class="sep">
@@ -576,13 +642,13 @@ body.is-admin td.admin-cell{ display:table-cell; }
       <input id="year" placeholder="Year (e.g. 2017)" inputmode="numeric">
       <input id="make" placeholder="Make (Brand)">
       <input id="model" placeholder="Model">
+      <input id="mileage" placeholder="Mileage (e.g. 128000)" inputmode="numeric">
       <input id="vin" placeholder="VIN (17 chars)" maxlength="17">
       <input id="color" placeholder="Color">
       <input id="engine" placeholder="Engine Size (e.g. 3.6L)">
       <input id="transmission" placeholder="Transmission (Auto / Manual / CVT)">
       <input id="drivetrain" placeholder="Drivetrain (FWD / RWD / AWD)">
 
-      <!-- NEW: good motor & transmission flags -->
       <select id="goodMotor">
         <option value="">Good Motor? (optional)</option>
         <option value="yes">Yes ✅</option>
@@ -593,6 +659,8 @@ body.is-admin td.admin-cell{ display:table-cell; }
         <option value="yes">Yes ✅</option>
         <option value="no">No ❌</option>
       </select>
+
+      <textarea id="photoUrls" placeholder="Photo URLs (comma-separated)&#10;Example: https://...1.jpg, https://...2.jpg"></textarea>
 
       <button class="primary" id="addBtn" onclick="addCar()">Add Vehicle</button>
     </div>
@@ -623,6 +691,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
       <input id="e_year" placeholder="Year (e.g. 2017)" inputmode="numeric">
       <input id="e_make" placeholder="Make (Brand)">
       <input id="e_model" placeholder="Model">
+      <input id="e_mileage" placeholder="Mileage (e.g. 128000)" inputmode="numeric">
       <input id="e_vin" placeholder="VIN (17 chars)" maxlength="17">
       <input id="e_color" placeholder="Color">
       <input id="e_engine" placeholder="Engine Size (e.g. 3.6L)">
@@ -639,6 +708,8 @@ body.is-admin td.admin-cell{ display:table-cell; }
         <option value="yes">Yes ✅</option>
         <option value="no">No ❌</option>
       </select>
+
+      <textarea id="e_photoUrls" placeholder="Photo URLs (comma-separated)"></textarea>
     </div>
 
     <div class="modalActions">
@@ -693,6 +764,7 @@ const adminMsgText = document.getElementById("adminMsgText");
 
 const countLine = document.getElementById("countLine");
 const toast = document.getElementById("toast");
+const liveHint = document.getElementById("liveHint");
 
 /* Filters */
 const searchEl = document.getElementById("search");
@@ -716,7 +788,7 @@ function showToast(msg){
   toast.textContent = msg;
   toast.style.display = "block";
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(()=> toast.style.display="none", 900);
+  showToast._t = setTimeout(()=> toast.style.display="none", 950);
 }
 function escHtml(str){
   return String(str ?? "").replace(/[&<>"']/g,(m)=>({
@@ -726,10 +798,11 @@ function escHtml(str){
 function clean(str){ return String(str ?? "").trim(); }
 function cleanVIN(v){ return clean(v).toUpperCase().replace(/[^A-Z0-9]/g,""); }
 function validVIN(v){ return v.length === 17 && !/[IOQ]/.test(v); }
+
 function ynToBool(v){
   if(v==="yes") return true;
   if(v==="no") return false;
-  return null; // unknown / not set
+  return null;
 }
 function boolToYN(b){
   if(b===true) return "yes";
@@ -737,13 +810,33 @@ function boolToYN(b){
   return "";
 }
 
+function parseMileage(v){
+  const raw = clean(v).replace(/[^\d]/g,"");
+  if(!raw) return null;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) ? n : null;
+}
+function fmtMiles(n){
+  if(n===null || n===undefined || n==="") return "";
+  const num = typeof n === "number" ? n : parseMileage(String(n));
+  if(num===null) return "";
+  return num.toLocaleString() + " mi";
+}
+
+function parsePhotoUrls(text){
+  const t = clean(text);
+  if(!t) return [];
+  return t
+    .split(",")
+    .map(s=>clean(s))
+    .filter(Boolean)
+    .filter(u=>/^https?:\/\//i.test(u));
+}
+
 function setAdminUI(on){
   isAdmin = !!on;
   document.body.classList.toggle("is-admin", isAdmin);
-
-  // persist session
   localStorage.setItem("tlb_admin", isAdmin ? "1" : "0");
-
   applyFilters();
 }
 
@@ -786,15 +879,17 @@ async function addCar(){
   const y = clean(year.value);
   const mk = clean(make.value);
   const md = clean(model.value);
+  const miles = parseMileage(mileage.value);
   const v = cleanVIN(vin.value);
   const col = clean(color.value);
   const eng = clean(engine.value);
   const trn = clean(transmission.value);
   const drv = clean(drivetrain.value);
 
-  // NEW
   const gm = ynToBool(document.getElementById("goodMotor").value);
   const gt = ynToBool(document.getElementById("goodTrans").value);
+
+  const photos = parsePhotoUrls(document.getElementById("photoUrls").value);
 
   if(!y || !mk || !md){
     setNote(adminMsg, adminMsgText, "Year, Make, and Model are required.", "warn");
@@ -821,16 +916,19 @@ async function addCar(){
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
-    // only store these if user picked yes/no
+    if(miles !== null) payload.mileage = miles;
+    if(photos.length) payload.photos = photos;
+
     if(gm !== null) payload.goodMotor = gm;
     if(gt !== null) payload.goodTrans = gt;
 
     await ref.add(payload);
 
-    // clear inputs
     document.querySelectorAll('#adminPanel input').forEach(i=>i.value="");
     document.getElementById("goodMotor").value = "";
     document.getElementById("goodTrans").value = "";
+    document.getElementById("photoUrls").value = "";
+
     setNote(adminMsg, adminMsgText, "Vehicle added.", "ok");
     showToast("Added");
 
@@ -865,10 +963,10 @@ function openEdit(id){
 
   editingId = id;
 
-  // fill fields
   e_year.value = car.year || "";
   e_make.value = car.make || "";
   e_model.value = car.model || "";
+  e_mileage.value = (car.mileage ?? "") !== "" ? String(car.mileage ?? "") : "";
   e_vin.value = car.vin || "";
   e_color.value = car.color || "";
   e_engine.value = car.engine || "";
@@ -876,6 +974,7 @@ function openEdit(id){
   e_drivetrain.value = car.drivetrain || "";
   e_goodMotor.value = boolToYN(car.goodMotor);
   e_goodTrans.value = boolToYN(car.goodTrans);
+  e_photoUrls.value = Array.isArray(car.photos) ? car.photos.join(", ") : "";
 
   setNote(editMsg, editMsgText, "", "");
   editBack.style.display = "block";
@@ -893,6 +992,7 @@ async function saveEdit(){
   const y = clean(e_year.value);
   const mk = clean(e_make.value);
   const md = clean(e_model.value);
+  const miles = parseMileage(e_mileage.value);
   const v = cleanVIN(e_vin.value);
   const col = clean(e_color.value);
   const eng = clean(e_engine.value);
@@ -901,6 +1001,8 @@ async function saveEdit(){
 
   const gm = ynToBool(e_goodMotor.value);
   const gt = ynToBool(e_goodTrans.value);
+
+  const photos = parsePhotoUrls(e_photoUrls.value);
 
   if(!y || !mk || !md){
     setNote(editMsg, editMsgText, "Year, Make, and Model are required.", "warn");
@@ -926,22 +1028,29 @@ async function saveEdit(){
       drivetrain:drv
     };
 
-    // store flags only if yes/no selected, otherwise remove field
-    if(gm === null){
-      updates.goodMotor = firebase.firestore.FieldValue.delete();
+    // mileage set/remove
+    if(miles === null){
+      updates.mileage = firebase.firestore.FieldValue.delete();
     }else{
-      updates.goodMotor = gm;
-    }
-    if(gt === null){
-      updates.goodTrans = firebase.firestore.FieldValue.delete();
-    }else{
-      updates.goodTrans = gt;
+      updates.mileage = miles;
     }
 
+    // photos set/remove
+    if(!photos.length){
+      updates.photos = firebase.firestore.FieldValue.delete();
+    }else{
+      updates.photos = photos;
+    }
+
+    // store flags only if yes/no selected, otherwise remove field
+    updates.goodMotor = (gm === null) ? firebase.firestore.FieldValue.delete() : gm;
+    updates.goodTrans = (gt === null) ? firebase.firestore.FieldValue.delete() : gt;
+
     await ref.doc(editingId).update(updates);
+
     setNote(editMsg, editMsgText, "Saved.", "ok");
     showToast("Saved");
-    setTimeout(closeEdit, 500);
+    setTimeout(closeEdit, 550);
 
   }catch(e){
     setNote(editMsg, editMsgText, "Save failed. Check connection/rules.", "bad");
@@ -977,6 +1086,7 @@ function startListener(){
 
   setNote(invMsg, invMsgText, "Loading inventory…", "");
   countLine.textContent = "Loading…";
+  liveHint.textContent = "Connecting…";
 
   unsub = ref.orderBy("createdAt","desc").onSnapshot(s=>{
     liveCars = [];
@@ -985,12 +1095,13 @@ function startListener(){
     });
 
     countLine.textContent = `${liveCars.length} vehicles`;
-    setNote(invMsg, invMsgText, liveCars.length ? "Tap VIN to copy." : "No vehicles yet.", liveCars.length ? "" : "warn");
-
+    liveHint.textContent = "Live sync on";
+    setNote(invMsg, invMsgText, liveCars.length ? "Tap VIN to copy. Swipe photos inside the square." : "No vehicles yet.", liveCars.length ? "" : "warn");
     applyFilters();
   }, (err)=>{
     setNote(invMsg, invMsgText, "Live sync failed. Check Firestore rules/connection.", "bad");
     countLine.textContent = "Error";
+    liveHint.textContent = "Offline";
   });
 }
 
@@ -1001,10 +1112,17 @@ function applyFilters(){
 
   let list = liveCars.slice();
 
+  // attach sortable timestamp
+  list.forEach(c=>{
+    c._ts = getMs(c.createdAt);
+    c._miles = (typeof c.mileage === "number") ? c.mileage : (parseMileage(String(c.mileage||"")) ?? null);
+  });
+
   if(q){
     list = list.filter(c=>{
       const blob = [
         c.year, c.make, c.model, c.vin, c.color, c.engine, c.transmission, c.drivetrain,
+        c.mileage,
         (c.goodMotor===true ? "good motor" : c.goodMotor===false ? "bad motor" : ""),
         (c.goodTrans===true ? "good transmission" : c.goodTrans===false ? "bad transmission" : "")
       ].map(x=>String(x||"").toLowerCase()).join(" ");
@@ -1016,12 +1134,16 @@ function applyFilters(){
   list.sort((a,b)=>{
     const ay = parseInt(a.year||"0",10) || 0;
     const by = parseInt(b.year||"0",10) || 0;
+    const am = a._miles ?? 9e15;
+    const bm = b._miles ?? 9e15;
 
     if(sort==="newest") return (b._ts||0) - (a._ts||0);
     if(sort==="oldest") return (a._ts||0) - (b._ts||0);
     if(sort==="yearDesc") return by - ay;
     if(sort==="yearAsc") return ay - by;
     if(sort==="makeAsc") return String(a.make||"").localeCompare(String(b.make||""));
+    if(sort==="milesAsc") return am - bm;
+    if(sort==="milesDesc") return bm - am;
     return 0;
   });
 
@@ -1043,13 +1165,35 @@ function ynLabel(b, what){
   return "";
 }
 
+function buildPhotoSquare(photos){
+  const arr = Array.isArray(photos) ? photos.filter(Boolean) : [];
+  if(!arr.length){
+    return `
+      <div class="photoSquare">
+        <div class="photoFallback">NO PHOTOS</div>
+      </div>
+    `;
+  }
+
+  const imgs = arr.map(u=>{
+    const safe = escHtml(u);
+    return `<img src="${safe}" alt="Vehicle photo" loading="lazy" onerror="this.style.display='none'">`;
+  }).join("");
+
+  return `
+    <div class="photoSquare hasPhotos">
+      <div class="photoBadge"><span>${arr.length}</span> photo${arr.length===1?"":"s"}</div>
+      <div class="photoTrack" aria-label="Vehicle photos">
+        ${imgs}
+      </div>
+    </div>
+  `;
+}
+
 function renderTable(list){
   inventoryBody.innerHTML = "";
 
   list.forEach(c=>{
-    const createdMs = getMs(c.createdAt);
-    c._ts = createdMs;
-
     const vehicleLine = `${escHtml(c.year||"")} ${escHtml(c.make||"")} ${escHtml(c.model||"")}`.trim() || "Vehicle";
     const vinVal = escHtml(c.vin||"");
 
@@ -1063,6 +1207,8 @@ function renderTable(list){
     const specs = specsArr.join(" · ");
 
     const tags = [];
+    const milesLabel = fmtMiles(c.mileage);
+    if(milesLabel) tags.push(`<span class="tag miles">${escHtml(milesLabel)}</span>`);
     if(c.drivetrain) tags.push(`<span class="tag">${escHtml(c.drivetrain)}</span>`);
     if(c.transmission) tags.push(`<span class="tag">${escHtml(c.transmission)}</span>`);
     if(c.engine) tags.push(`<span class="tag">${escHtml(c.engine)}</span>`);
@@ -1071,23 +1217,34 @@ function renderTable(list){
     if(c.goodTrans===true) tags.push(`<span class="tag ok">Good Trans ✅</span>`);
     if(c.goodTrans===false) tags.push(`<span class="tag bad">Bad Trans ❌</span>`);
 
+    const photoSquare = buildPhotoSquare(c.photos);
+
     inventoryBody.insertAdjacentHTML("beforeend", `
       <tr>
         <td>
-          <strong>${vehicleLine}</strong>
-          ${specs ? `<div class="specs">${specs}</div>` : ``}
-          ${tags.length ? `<div class="kv">${tags.join("")}</div>` : ``}
+          <div class="gallery">
+            ${photoSquare}
+            <div style="min-width:0">
+              <strong>${vehicleLine}</strong>
+              ${specs ? `<div class="specs">${specs}</div>` : ``}
+              ${tags.length ? `<div class="kv">${tags.join("")}</div>` : ``}
+            </div>
+          </div>
         </td>
 
         <td>
           ${vinVal
-            ? `<button class="smallBtn" onclick="copyText('${vinVal}')">Copy VIN</button>
-               <div class="specs" style="margin-top:8px">${vinVal}</div>`
+            ? `
+              <div class="copyLine">
+                <button class="smallBtn" onclick="copyText('${vinVal}')">Copy VIN</button>
+                <button class="smallBtn ghost" onclick="copyText('${vehicleLine} • ${vinVal}')">Copy Line</button>
+              </div>
+              <div class="specs" style="margin-top:8px">${vinVal}</div>
+            `
             : `<div class="specs">—</div>`
           }
         </td>
 
-        <!-- ✅ always render admin cell (prevents mobile layout issues); still hidden unless admin -->
         <td class="admin-only admin-cell">
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="smallBtn primary" onclick="openEdit('${c.id}')">Edit</button>
