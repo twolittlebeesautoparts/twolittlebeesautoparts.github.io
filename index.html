@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0b0f14">
 <meta name="description" content="Two Little Bees Auto Parts inventory — VIN-verified OEM used parts in Indianapolis.">
 
-<!-- Firebase (Compat) -->
+<!-- Firebase (COMPAT SDK for single-file HTML) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -436,7 +436,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
   cursor:pointer;
 }
 
-/* ✅ Photo square scroller */
+/* PHOTO SQUARE */
 .gallery{ display:flex; align-items:flex-start; gap:12px; }
 
 .photoSquare{
@@ -580,7 +580,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 .money{ font-weight:950; }
 .muted{ color:var(--muted); font-size:12px; }
 
-/* ✅ MOBILE */
+/* MOBILE */
 @media(max-width:700px){
   html,body{ overflow-x:hidden; }
 
@@ -810,7 +810,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
   </div>
 </div>
 
-<!-- ✅ PARTS MODAL (PUBLIC VIEW + ADMIN EDIT) -->
+<!-- PARTS MODAL (PUBLIC VIEW + ADMIN EDIT) -->
 <div class="modalBack" id="partsBack">
   <div class="modal">
     <div class="modalHead">
@@ -823,7 +823,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 
     <hr class="sep">
 
-    <!-- ✅ Admin-only add/edit form -->
+    <!-- Admin-only add/edit form -->
     <div class="admin-only admin-block">
       <div class="grid">
         <input id="p_partName" placeholder="Part Name (ex: Alternator)">
@@ -843,7 +843,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
       <div style="height:12px"></div>
     </div>
 
-    <!-- ✅ Public note (shows when not admin) -->
+    <!-- Public note -->
     <div class="note" id="partsPublicNote"><span class="dot"></span><span id="partsPublicNoteText"></span></div>
 
     <div class="partsWrap" style="margin-top:12px">
@@ -914,6 +914,7 @@ service cloud.firestore {
     match /inventory/{carId} {
       allow read: if true;
       allow create, update, delete: if request.auth != null;
+
       match /parts/{partId} {
         allow read: if true;
         allow create, update, delete: if request.auth != null;
@@ -927,12 +928,19 @@ service cloud.firestore {
 }
 */
 
-/* FIREBASE */
+/* ========================
+   FIREBASE INIT (COMPAT)
+======================== */
 firebase.initializeApp({
-  apiKey:"AIzaSyBQ5WyWulY-MPb9Wlv144AwjjcS-JZt9k",
-  authDomain:"two-little-bees-inventory.firebaseapp.com",
-  projectId:"two-little-bees-inventory"
+  apiKey: "AIzaSyBVumo8QP3m18p33ugqx_eNADsjHG0gJS0",
+  authDomain: "two-little-bees-inventory.firebaseapp.com",
+  projectId: "two-little-bees-inventory",
+  storageBucket: "two-little-bees-inventory.firebasestorage.app",
+  messagingSenderId: "669354511397",
+  appId: "1:669354511397:web:a5e4565496e097f85483cc",
+  measurementId: "G-736B95M78E"
 });
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 const ref = db.collection("inventory");
@@ -983,6 +991,8 @@ const partsBody = document.getElementById("partsBody");
 const partsCount = document.getElementById("partsCount");
 const partsPublicNote = document.getElementById("partsPublicNote");
 const partsPublicNoteText = document.getElementById("partsPublicNoteText");
+const partsMsg = document.getElementById("partsMsg");
+const partsMsgText = document.getElementById("partsMsgText");
 
 let __partsCarId = null;
 let __partsUnsub = null;
@@ -1065,7 +1075,7 @@ function beeSecret(){
   setTimeout(()=>beeClicks=0, 900);
 }
 
-/* ===== REAL Firebase Auth login/logout ===== */
+/* ===== Firebase Auth login/logout ===== */
 async function login(){
   const email = clean(username.value);
   const pass  = clean(password.value);
@@ -1079,15 +1089,14 @@ async function login(){
   try{
     await auth.signInWithEmailAndPassword(email, pass);
     loginCard.style.display="none";
-    username.value = "";
-    password.value = "";
+    username.value="";
+    password.value="";
     showToast("Admin enabled");
   }catch(e){
-    setNote(loginMsg, loginMsgText, "Login failed: " + (e?.message || "unknown error"), "bad");
-    console.error("Auth login error:", e);
+    setNote(loginMsg, loginMsgText, "Login failed: " + (e?.message || ""), "bad");
+    console.error(e);
   }
 }
-
 async function logout(){
   try{ await auth.signOut(); }catch(e){ console.error(e); }
   closeEdit();
@@ -1098,15 +1107,10 @@ async function logout(){
 /* ===== auth state -> admin UI ===== */
 auth.onAuthStateChanged((user)=>{
   setAdminUI(!!user);
-  if(user){
-    setNote(invMsg, invMsgText, "Public view on. Admin tools enabled.", "ok");
-  }else{
-    setNote(invMsg, invMsgText, "Public view on. (Admin tools hidden)", "");
-  }
 });
 
 /* =========================
-   ✅ STOCK NUMBER (transaction)
+   STOCK NUMBER (transaction)
    ========================= */
 function pad3(n){ return String(n).padStart(3,"0"); }
 function yyyymmdd(d){
@@ -1139,7 +1143,6 @@ async function nextStockNumber(){
         tx.update(metaRef, { date: today, seq: 1, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
       }
     }
-
     return `TLB-${today}-${pad3(seq)}`;
   });
 
@@ -1164,12 +1167,12 @@ async function generateStockToForm(isEdit){
     showToast("Stock # generated");
   }catch(e){
     setNote(msgEl, msgTextEl, "Stock # generator failed: " + (e?.message || "rules/connection"), "bad");
-    console.error("Stock generator error:", e);
+    console.error(e);
   }
 }
 
 /* =========================
-   ✅ VIN AUTO-FILL (VPIC)
+   VIN AUTO-FILL (VPIC)
    ========================= */
 async function decodeVIN(vin){
   const url = `https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvaluesextended/${encodeURIComponent(vin)}?format=json`;
@@ -1229,7 +1232,7 @@ async function autoFillFromVIN(isEdit){
     showToast("VIN Auto-Fill");
   }catch(e){
     setNote(msgEl, msgTextEl, "VIN auto-fill failed: " + (e?.message || "try again"), "bad");
-    console.error("VIN autofill error:", e);
+    console.error(e);
   }
 }
 
@@ -1251,7 +1254,7 @@ function hookVinAutoFill(){
 }
 
 /* =========================
-   ✅ PHOTO
+   PHOTO
    ========================= */
 function enableDragScroll(el){
   let isDown=false, startX=0, startLeft=0;
@@ -1290,21 +1293,17 @@ function openPhoto(carId, idx){
   setNote(photoMsg, photoMsgText, "Swipe on phone, or use Prev/Next.", "");
   renderPhoto();
 }
-
 function renderPhoto(){
   const arr = __photosByCarId[__currentPhoto.carId] || [];
   if(!arr.length){ closePhoto(); return; }
-  const url = arr[__currentPhoto.idx];
-  photoView.src = url;
+  photoView.src = arr[__currentPhoto.idx];
   photoSub.textContent = `Photo ${__currentPhoto.idx+1} of ${arr.length}`;
 }
-
 function closePhoto(){
   photoBack.style.display = "none";
   photoView.src = "";
   __currentPhoto = { carId:null, idx:0 };
 }
-
 function nextPhoto(){
   const arr = __photosByCarId[__currentPhoto.carId] || [];
   if(!arr.length) return;
@@ -1342,7 +1341,7 @@ photoView.addEventListener("touchend",(e)=>{
 photoBack.addEventListener("click",(e)=>{ if(e.target===photoBack) closePhoto(); });
 
 /* =========================
-   ✅ PARTS (PUBLIC READ, ADMIN WRITE)
+   PARTS (PUBLIC READ, ADMIN WRITE)
    ========================= */
 function partsCol(carId){ return ref.doc(carId).collection("parts"); }
 
@@ -1357,6 +1356,7 @@ function closeParts(){
   resetPartForm();
   partsPublicNote.style.display = "none";
   partsPublicNoteText.textContent = "";
+  setNote(partsMsg, partsMsgText, "", "");
   if(__partsUnsub){ __partsUnsub(); __partsUnsub = null; }
 }
 
@@ -1371,7 +1371,6 @@ function openParts(carId){
   partsSub.textContent = `${veh || "Vehicle"} • Stock: ${stock}`;
   partsBack.style.display = "block";
 
-  // public hint
   if(!isAdmin){
     partsPublicNote.style.display = "flex";
     partsPublicNoteText.textContent = "View only. (Admin can add/edit/delete parts.)";
@@ -1391,7 +1390,7 @@ function openParts(carId){
   }, (e)=>{
     partsCount.textContent = "Error";
     partsBody.innerHTML = `<tr><td colspan="5" class="muted">Failed to load parts: ${escHtml(e?.message || "rules/connection")}</td></tr>`;
-    console.error("Parts snapshot error:", e);
+    console.error(e);
   });
 }
 
@@ -1444,7 +1443,7 @@ function renderParts(){
 }
 
 function resetPartForm(){
-  if(typeof p_partName === "undefined") return; // form is admin-only, but safe guard
+  if(typeof p_partName === "undefined") return;
   p_partName.value = "";
   p_partType.value = "";
   p_interchange.value = "";
@@ -1455,6 +1454,7 @@ function resetPartForm(){
   p_notes.value = "";
   __editingPartId = null;
   p_saveBtn.textContent = "Save Part";
+  setNote(partsMsg, partsMsgText, "", "");
 }
 
 function editPart(partId){
@@ -1472,6 +1472,7 @@ function editPart(partId){
   p_core.value = (p.core ?? "") !== "" ? String(p.core ?? "") : "";
   p_notes.value = p.notes || "";
   p_saveBtn.textContent = "Update Part";
+  setNote(partsMsg, partsMsgText, "Editing part…", "");
   showToast("Editing part");
 }
 
@@ -1493,31 +1494,36 @@ async function savePart(){
   if(core !== null) payload.core = core; else payload.core = firebase.firestore.FieldValue.delete();
 
   if(!payload.partName){
+    setNote(partsMsg, partsMsgText, "Part name required.", "warn");
     showToast("Part name required");
     return;
   }
 
   try{
     p_saveBtn.disabled = true;
+    setNote(partsMsg, partsMsgText, "Saving…", "");
 
     if(__editingPartId){
       await partsCol(__partsCarId).doc(__editingPartId).update({
         ...payload,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+      setNote(partsMsg, partsMsgText, "Updated.", "ok");
       showToast("Updated");
     }else{
       await partsCol(__partsCarId).add({
         ...payload,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+      setNote(partsMsg, partsMsgText, "Added.", "ok");
       showToast("Added part");
     }
 
     resetPartForm();
   }catch(e){
+    setNote(partsMsg, partsMsgText, "Save failed: " + (e?.message || ""), "bad");
     showToast("Save failed");
-    console.error("Save part error:", e);
+    console.error(e);
   }finally{
     p_saveBtn.disabled = false;
   }
@@ -1532,7 +1538,7 @@ async function deletePart(partId){
     showToast("Part deleted");
   }catch(e){
     showToast("Delete failed");
-    console.error("Delete part error:", e);
+    console.error(e);
   }
 }
 
@@ -1561,7 +1567,7 @@ async function copyPartsCSV(){
 partsBack.addEventListener("click",(e)=>{ if(e.target === partsBack) closeParts(); });
 
 /* =========================
-   ✅ add/remove/edit vehicle
+   VEHICLES: add/edit/delete
    ========================= */
 async function addCar(){
   if(!auth.currentUser){
@@ -1635,7 +1641,7 @@ async function addCar(){
 
   }catch(e){
     setNote(adminMsg, adminMsgText, "Save failed: " + (e?.message || "rules/connection"), "bad");
-    console.error("Add vehicle error:", e);
+    console.error(e);
   }
 
   addBtn.disabled = false;
@@ -1650,7 +1656,7 @@ async function removeCar(id){
     showToast("Deleted");
   }catch(e){
     showToast("Delete failed");
-    console.error("Remove vehicle error:", e);
+    console.error(e);
   }
 }
 
@@ -1658,7 +1664,6 @@ function scrollToAdmin(){
   document.getElementById("adminPanel").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
-/* ===== EDIT FLOW ===== */
 function openEdit(id){
   if(!isAdmin) return;
   const car = liveCars.find(x=>x.id===id);
@@ -1757,7 +1762,7 @@ async function saveEdit(){
 
   }catch(e){
     setNote(editMsg, editMsgText, "Save failed: " + (e?.message || "rules/connection"), "bad");
-    console.error("Save edit error:", e);
+    console.error(e);
   }
 
   saveBtn.disabled = false;
@@ -1773,7 +1778,7 @@ async function deleteFromEdit(){
     closeEdit();
   }catch(e){
     showToast("Delete failed");
-    console.error("Delete from edit error:", e);
+    console.error(e);
   }
 }
 
@@ -1806,7 +1811,7 @@ function startListener(){
     setNote(invMsg, invMsgText, "Live sync failed: " + (err?.message || "rules/connection"), "bad");
     countLine.textContent = "Error";
     liveHint.textContent = "Offline";
-    console.error("Inventory snapshot error:", err);
+    console.error(err);
   });
 }
 
@@ -1905,12 +1910,10 @@ function renderTable(list){
     const stockVal = escHtml(c.stockNumber||"");
 
     const specsArr = [c.color, c.engine, c.transmission, c.drivetrain].filter(Boolean).map(escHtml);
-
     const gmText = ynLabel(c.goodMotor, "Motor");
     const gtText = ynLabel(c.goodTrans, "Trans");
     if(gmText) specsArr.push(escHtml(gmText));
     if(gtText) specsArr.push(escHtml(gtText));
-
     const specs = specsArr.join(" · ");
 
     const tags = [];
@@ -1989,7 +1992,6 @@ function clearSearch(){
 (function init(){
   hookVinAutoFill();
   startListener();
-
   setNote(invMsg, invMsgText, "Loading inventory…", "");
   setNote(loginMsg, loginMsgText, "", "");
   setNote(adminMsg, adminMsgText, "", "");
@@ -1998,4 +2000,5 @@ function clearSearch(){
 
 </body>
 </html>
+
 
