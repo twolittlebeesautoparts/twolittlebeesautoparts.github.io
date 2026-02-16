@@ -9,7 +9,9 @@
 <meta name="theme-color" content="#0b0f14">
 <meta name="description" content="Two Little Bees Auto Parts inventory — VIN-verified OEM used parts in Indianapolis.">
 
+<!-- Firebase (Compat) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
@@ -285,7 +287,7 @@ button.ghost{
 
 table{
   width:100%;
-  min-width:880px;
+  min-width:980px;
   border-collapse:collapse;
   margin-top:12px;
 }
@@ -435,11 +437,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 }
 
 /* ✅ Photo square scroller */
-.gallery{
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-}
+.gallery{ display:flex; align-items:flex-start; gap:12px; }
 
 .photoSquare{
   width:112px;
@@ -468,7 +466,6 @@ body.is-admin td.admin-cell{ display:table-cell; }
   cursor:grab;
 }
 .photoTrack:active{ cursor:grabbing; }
-
 .photoTrack::-webkit-scrollbar{display:none}
 .photoTrack img{
   width:112px;
@@ -520,18 +517,8 @@ body.is-admin td.admin-cell{ display:table-cell; }
 }
 
 /* PHOTO VIEWER */
-.photoViewer{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-.photoViewerTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  flex-wrap:wrap;
-}
+.photoViewer{ display:flex; flex-direction:column; gap:12px; }
+.photoViewerTop{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
 .photoViewerImgWrap{
   width:100%;
   border-radius:16px;
@@ -543,17 +530,8 @@ body.is-admin td.admin-cell{ display:table-cell; }
   align-items:center;
   justify-content:center;
 }
-#photoView{
-  max-width:100%;
-  max-height:70vh;
-  object-fit:contain;
-  display:block;
-}
-.photoViewerNav{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+#photoView{ max-width:100%; max-height:70vh; object-fit:contain; display:block; }
+.photoViewerNav{ display:flex; gap:10px; flex-wrap:wrap; }
 
 /* PARTS */
 .partsWrap{
@@ -585,14 +563,8 @@ body.is-admin td.admin-cell{ display:table-cell; }
   font-size:.85rem;
   text-align:left;
 }
-.partsTable td{
-  font-size:.92rem;
-}
-.partsTools{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
+.partsTable td{ font-size:.92rem; }
+.partsTools{ display:flex; gap:8px; flex-wrap:wrap; }
 .badgeQty{
   display:inline-flex;
   align-items:center;
@@ -605,21 +577,14 @@ body.is-admin td.admin-cell{ display:table-cell; }
   background:rgba(255,255,255,.06);
 }
 .badgeQty span{ color: rgba(244,196,48,.95); }
-
 .money{ font-weight:950; }
 .muted{ color:var(--muted); font-size:12px; }
 
-/* ✅ MOBILE: stack as cards */
+/* ✅ MOBILE */
 @media(max-width:700px){
   html,body{ overflow-x:hidden; }
 
-  .table-wrap{
-    overflow-x:hidden;
-    max-height:none;
-    border:0;
-    background:transparent;
-    padding:0;
-  }
+  .table-wrap{ overflow-x:hidden; max-height:none; border:0; background:transparent; padding:0; }
 
   table{ min-width:0 !important; width:100%; margin-top:12px; }
   thead{ display:none; }
@@ -688,7 +653,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
     </div>
     <hr class="sep">
     <div class="grid">
-      <input id="username" placeholder="Username" autocomplete="username">
+      <input id="username" placeholder="Admin Email (Firebase Auth)" autocomplete="username">
       <input id="password" type="password" placeholder="Password" autocomplete="current-password">
       <button class="primary" onclick="login()">Login</button>
     </div>
@@ -726,8 +691,8 @@ body.is-admin td.admin-cell{ display:table-cell; }
       <table>
         <thead>
           <tr>
-            <th style="width:58%">Vehicle</th>
-            <th style="width:22%">VIN / Stock</th>
+            <th style="width:56%">Vehicle</th>
+            <th style="width:24%">VIN / Stock</th>
             <th style="width:20%" class="admin-only admin-cell">Actions</th>
           </tr>
         </thead>
@@ -736,37 +701,6 @@ body.is-admin td.admin-cell{ display:table-cell; }
     </div>
 
     <div id="invMsg" class="note"><span class="dot"></span><span id="invMsgText"></span></div>
-  </div>
-
-  <!-- QUICK ADD PART BY STOCK -->
-  <div class="card admin-only admin-block lift" id="quickPartsCard">
-    <div class="cardHead">
-      <div>
-        <h3>Quick Add Parts (by Stock #)</h3>
-        <div class="mini">Type the stock number → it finds the vehicle → add parts fast.</div>
-      </div>
-    </div>
-    <hr class="sep">
-
-    <div class="grid">
-      <input id="qp_stock" placeholder="Stock # (ex: TLB-20260214-001)">
-      <button class="ghost" onclick="quickFindStock()">Find Vehicle</button>
-
-      <input id="qp_vehicle" placeholder="Vehicle (auto)" disabled>
-      <input id="qp_partName" placeholder="Part Name (ex: Alternator)">
-      <input id="qp_partType" placeholder="Part Type (ex: Engine / Body / Module)">
-      <input id="qp_interchange" placeholder="Interchange # (optional)">
-      <input id="qp_location" placeholder="Location (ex: Rack A-3)">
-      <input id="qp_qty" placeholder="Qty (ex: 1)" inputmode="numeric">
-      <input id="qp_price" placeholder="Price (ex: 150)" inputmode="decimal">
-      <input id="qp_core" placeholder="Core (optional)" inputmode="decimal">
-      <textarea id="qp_notes" placeholder="Notes (optional)"></textarea>
-
-      <button class="primary" id="qp_addBtn" onclick="quickAddPart()">Add Part to Vehicle</button>
-      <button class="ghost" onclick="quickClear()">Clear</button>
-    </div>
-
-    <div id="qpMsg" class="note"><span class="dot"></span><span id="qpMsgText"></span></div>
   </div>
 
   <!-- ADMIN PANEL -->
@@ -780,7 +714,6 @@ body.is-admin td.admin-cell{ display:table-cell; }
     <hr class="sep">
 
     <div class="grid">
-      <!-- ✅ Stock # -->
       <input id="stockNumber" placeholder="Stock # (auto)" disabled>
       <button class="ghost" type="button" onclick="generateStockToForm(false)">Generate Stock #</button>
 
@@ -836,7 +769,6 @@ body.is-admin td.admin-cell{ display:table-cell; }
     <hr class="sep">
 
     <div class="grid">
-      <!-- ✅ Stock # -->
       <input id="e_stockNumber" placeholder="Stock # (auto)" disabled>
       <button class="ghost" type="button" onclick="generateStockToForm(true)">Generate Stock #</button>
 
@@ -870,7 +802,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
     <div class="modalActions">
       <button class="primary" id="saveBtn" onclick="saveEdit()">Save Changes</button>
       <button class="ghost" onclick="closeEdit()">Cancel</button>
-      <button class="smallBtn" onclick="openParts(editingId)" style="border-radius:12px">Parts</button>
+      <button class="smallBtn" onclick="openParts(editingId)">Parts</button>
       <button class="danger" onclick="deleteFromEdit()">Delete</button>
     </div>
 
@@ -878,8 +810,8 @@ body.is-admin td.admin-cell{ display:table-cell; }
   </div>
 </div>
 
-<!-- PARTS MODAL (admin) -->
-<div class="modalBack admin-only" id="partsBack">
+<!-- ✅ PARTS MODAL (PUBLIC VIEW + ADMIN EDIT) -->
+<div class="modalBack" id="partsBack">
   <div class="modal">
     <div class="modalHead">
       <div>
@@ -891,29 +823,34 @@ body.is-admin td.admin-cell{ display:table-cell; }
 
     <hr class="sep">
 
-    <div class="grid">
-      <input id="p_partName" placeholder="Part Name (ex: Alternator)">
-      <input id="p_partType" placeholder="Part Type (ex: Engine / Body / Module)">
-      <input id="p_interchange" placeholder="Interchange # (optional)">
-      <input id="p_location" placeholder="Location (ex: Rack A-3)">
-      <input id="p_qty" placeholder="Qty (ex: 1)" inputmode="numeric">
-      <input id="p_price" placeholder="Price (ex: 150)" inputmode="decimal">
-      <input id="p_core" placeholder="Core (optional)" inputmode="decimal">
-      <textarea id="p_notes" placeholder="Notes (optional)"></textarea>
+    <!-- ✅ Admin-only add/edit form -->
+    <div class="admin-only admin-block">
+      <div class="grid">
+        <input id="p_partName" placeholder="Part Name (ex: Alternator)">
+        <input id="p_partType" placeholder="Part Type (ex: Engine / Body / Module)">
+        <input id="p_interchange" placeholder="Interchange # (optional)">
+        <input id="p_location" placeholder="Location (ex: Rack A-3)">
+        <input id="p_qty" placeholder="Qty (ex: 1)" inputmode="numeric" value="1">
+        <input id="p_price" placeholder="Price (ex: 150)" inputmode="decimal">
+        <input id="p_core" placeholder="Core (optional)" inputmode="decimal">
+        <textarea id="p_notes" placeholder="Notes (optional)"></textarea>
 
-      <button class="primary" id="p_saveBtn" onclick="savePart()">Save Part</button>
-      <button class="ghost" onclick="resetPartForm()">New Part</button>
+        <button class="primary" id="p_saveBtn" onclick="savePart()">Save Part</button>
+        <button class="ghost" onclick="resetPartForm()">New Part</button>
+      </div>
+
+      <div class="note" id="partsMsg"><span class="dot"></span><span id="partsMsgText"></span></div>
+      <div style="height:12px"></div>
     </div>
 
-    <div class="note" id="partsMsg"><span class="dot"></span><span id="partsMsgText"></span></div>
+    <!-- ✅ Public note (shows when not admin) -->
+    <div class="note" id="partsPublicNote"><span class="dot"></span><span id="partsPublicNoteText"></span></div>
 
-    <div style="height:12px"></div>
-
-    <div class="partsWrap">
+    <div class="partsWrap" style="margin-top:12px">
       <div class="partsHeader">
         <div>
           <div class="mini" id="partsCount">0 parts</div>
-          <div class="muted">Tip: keep adding parts here — they stay synced to this stock #.</div>
+          <div class="muted">Public can view. Admin can edit.</div>
         </div>
         <div class="partsTools">
           <button class="smallBtn ghost" onclick="refreshParts()">Refresh</button>
@@ -968,20 +905,27 @@ body.is-admin td.admin-cell{ display:table-cell; }
 </div>
 
 <script>
-/* ======================
-   SECURITY NOTE (IMPORTANT)
-   ======================
-   This page uses a front-end username/password to show/hide admin UI.
-   Anyone can view the code and see ADMIN_USER / ADMIN_PASS.
-   Real protection must be done with Firebase Auth + Firestore security rules.
-====================== */
-
-/* ADMIN LOGIN */
-const ADMIN_USER="admin";
-const ADMIN_PASS="bees123";
-
-let isAdmin=false;
-let beeClicks=0;
+/* =========================================================
+   FIRESTORE RULES YOU MUST SET (PUBLIC VIEW + ADMIN WRITE)
+   =========================================================
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /inventory/{carId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
+      match /parts/{partId} {
+        allow read: if true;
+        allow create, update, delete: if request.auth != null;
+      }
+    }
+    match /meta/stockCounter {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+*/
 
 /* FIREBASE */
 firebase.initializeApp({
@@ -989,69 +933,61 @@ firebase.initializeApp({
   authDomain:"two-little-bees-inventory.firebaseapp.com",
   projectId:"two-little-bees-inventory"
 });
-
-const db=firebase.firestore();
-const ref=db.collection("inventory");
-const metaRef=db.collection("meta").doc("stockCounter"); // ✅ used for unique stock numbers
+const auth = firebase.auth();
+const db = firebase.firestore();
+const ref = db.collection("inventory");
+const metaRef = db.collection("meta").doc("stockCounter");
 
 /* UI refs */
 const loginCard = document.getElementById("loginCard");
-const adminPanel = document.getElementById("adminPanel");
 const inventoryBody = document.getElementById("inventoryBody");
+const toast = document.getElementById("toast");
 
 const loginMsg = document.getElementById("loginMsg");
 const loginMsgText = document.getElementById("loginMsgText");
-
 const invMsg = document.getElementById("invMsg");
 const invMsgText = document.getElementById("invMsgText");
-
 const adminMsg = document.getElementById("adminMsg");
 const adminMsgText = document.getElementById("adminMsgText");
+const editMsg = document.getElementById("editMsg");
+const editMsgText = document.getElementById("editMsgText");
 
 const countLine = document.getElementById("countLine");
-const toast = document.getElementById("toast");
 const liveHint = document.getElementById("liveHint");
 
-/* Filters */
 const searchEl = document.getElementById("search");
 const sortEl = document.getElementById("sort");
 
-let liveCars = [];   // [{id, ...data}]
+let isAdmin = false;
+let beeClicks = 0;
+let liveCars = [];
 let unsub = null;
 
-/* EDIT MODAL refs */
+/* EDIT */
 const editBack = document.getElementById("editBack");
-const editMsg = document.getElementById("editMsg");
-const editMsgText = document.getElementById("editMsgText");
 let editingId = null;
 
-/* PHOTO VIEWER refs */
+/* PHOTO VIEWER */
 const photoBack = document.getElementById("photoBack");
 const photoView = document.getElementById("photoView");
 const photoSub = document.getElementById("photoSub");
 const photoMsg = document.getElementById("photoMsg");
 const photoMsgText = document.getElementById("photoMsgText");
-
-let __photosByCarId = {}; // { id: [url,url] }
+let __photosByCarId = {};
 let __currentPhoto = { carId:null, idx:0 };
 
-/* PARTS MODAL refs */
+/* PARTS */
 const partsBack = document.getElementById("partsBack");
 const partsSub = document.getElementById("partsSub");
 const partsBody = document.getElementById("partsBody");
-const partsMsg = document.getElementById("partsMsg");
-const partsMsgText = document.getElementById("partsMsgText");
 const partsCount = document.getElementById("partsCount");
+const partsPublicNote = document.getElementById("partsPublicNote");
+const partsPublicNoteText = document.getElementById("partsPublicNoteText");
 
 let __partsCarId = null;
 let __partsUnsub = null;
-let __partsList = []; // cached
+let __partsList = [];
 let __editingPartId = null;
-
-/* QUICK PARTS refs */
-const qpMsg = document.getElementById("qpMsg");
-const qpMsgText = document.getElementById("qpMsgText");
-let __quickCarId = null;
 
 /* ===== helpers ===== */
 function setNote(el, textEl, msg, type=""){
@@ -1073,16 +1009,8 @@ function clean(str){ return String(str ?? "").trim(); }
 function cleanVIN(v){ return clean(v).toUpperCase().replace(/[^A-Z0-9]/g,""); }
 function validVIN(v){ return v.length === 17 && !/[IOQ]/.test(v); }
 
-function ynToBool(v){
-  if(v==="yes") return true;
-  if(v==="no") return false;
-  return null;
-}
-function boolToYN(b){
-  if(b===true) return "yes";
-  if(b===false) return "no";
-  return "";
-}
+function ynToBool(v){ if(v==="yes") return true; if(v==="no") return false; return null; }
+function boolToYN(b){ if(b===true) return "yes"; if(b===false) return "no"; return ""; }
 
 function parseMileage(v){
   const raw = clean(v).replace(/[^\d]/g,"");
@@ -1096,7 +1024,6 @@ function fmtMiles(n){
   if(num===null) return "";
   return num.toLocaleString() + " mi";
 }
-
 function parseMoney(v){
   const t = clean(v).replace(/[^0-9.]/g,"");
   if(!t) return null;
@@ -1109,28 +1036,21 @@ function fmtMoney(n){
   if(!Number.isFinite(num)) return "";
   return "$" + num.toFixed(2);
 }
-
 function parseIntSafe(v, fallback=null){
   const t = clean(v).replace(/[^\d-]/g,"");
   if(!t) return fallback;
   const n = parseInt(t,10);
   return Number.isFinite(n) ? n : fallback;
 }
-
 function parsePhotoUrls(text){
   const t = clean(text);
   if(!t) return [];
-  return t
-    .split(",")
-    .map(s=>clean(s))
-    .filter(Boolean)
-    .filter(u=>/^https?:\/\//i.test(u));
+  return t.split(",").map(s=>clean(s)).filter(Boolean).filter(u=>/^https?:\/\//i.test(u));
 }
 
 function setAdminUI(on){
   isAdmin = !!on;
   document.body.classList.toggle("is-admin", isAdmin);
-  localStorage.setItem("tlb_admin", isAdmin ? "1" : "0");
   applyFilters();
 }
 
@@ -1139,41 +1059,55 @@ function beeSecret(){
   beeClicks++;
   if(beeClicks===3){
     loginCard.style.display="block";
-    setNote(loginMsg, loginMsgText, "Enter credentials to enable admin tools.", "");
+    setNote(loginMsg, loginMsgText, "Login with your Firebase Auth email/password.", "");
     beeClicks=0;
   }
   setTimeout(()=>beeClicks=0, 900);
 }
 
-/* ===== login/logout ===== */
-function login(){
-  const u = clean(username.value);
-  const p = clean(password.value);
+/* ===== REAL Firebase Auth login/logout ===== */
+async function login(){
+  const email = clean(username.value);
+  const pass  = clean(password.value);
 
-  if(u===ADMIN_USER && p===ADMIN_PASS){
-    setAdminUI(true);
+  if(!email || !pass){
+    setNote(loginMsg, loginMsgText, "Enter email and password.", "warn");
+    return;
+  }
+
+  setNote(loginMsg, loginMsgText, "Signing in…", "");
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
     loginCard.style.display="none";
     username.value = "";
     password.value = "";
-    setNote(loginMsg, loginMsgText, "", "");
     showToast("Admin enabled");
-  }else{
-    setNote(loginMsg, loginMsgText, "Invalid login.", "bad");
+  }catch(e){
+    setNote(loginMsg, loginMsgText, "Login failed: " + (e?.message || "unknown error"), "bad");
+    console.error("Auth login error:", e);
   }
 }
 
-function logout(){
-  setAdminUI(false);
+async function logout(){
+  try{ await auth.signOut(); }catch(e){ console.error(e); }
   closeEdit();
   closeParts();
   showToast("Admin disabled");
 }
 
+/* ===== auth state -> admin UI ===== */
+auth.onAuthStateChanged((user)=>{
+  setAdminUI(!!user);
+  if(user){
+    setNote(invMsg, invMsgText, "Public view on. Admin tools enabled.", "ok");
+  }else{
+    setNote(invMsg, invMsgText, "Public view on. (Admin tools hidden)", "");
+  }
+});
+
 /* =========================
-   ✅ STOCK NUMBER (unique)
-   =========================
-   Format: TLB-YYYYMMDD-### (transaction safe)
-*/
+   ✅ STOCK NUMBER (transaction)
+   ========================= */
 function pad3(n){ return String(n).padStart(3,"0"); }
 function yyyymmdd(d){
   const y=d.getFullYear();
@@ -1185,11 +1119,9 @@ function yyyymmdd(d){
 async function nextStockNumber(){
   const today = yyyymmdd(new Date());
 
-  // Transaction to avoid duplicate stock numbers
   const stock = await db.runTransaction(async (tx)=>{
     const snap = await tx.get(metaRef);
     let seq = 0;
-    let date = today;
 
     if(!snap.exists){
       seq = 1;
@@ -1219,6 +1151,11 @@ async function generateStockToForm(isEdit){
   const msgEl = isEdit ? editMsg : adminMsg;
   const msgTextEl = isEdit ? editMsgText : adminMsgText;
 
+  if(!auth.currentUser){
+    setNote(msgEl, msgTextEl, "Login first (tap logo 3x). Stock generator requires admin auth.", "warn");
+    return;
+  }
+
   try{
     setNote(msgEl, msgTextEl, "Generating Stock #…", "");
     const s = await nextStockNumber();
@@ -1226,7 +1163,8 @@ async function generateStockToForm(isEdit){
     setNote(msgEl, msgTextEl, `Stock # ready: ${s}`, "ok");
     showToast("Stock # generated");
   }catch(e){
-    setNote(msgEl, msgTextEl, "Stock # generator failed (rules/connection).", "bad");
+    setNote(msgEl, msgTextEl, "Stock # generator failed: " + (e?.message || "rules/connection"), "bad");
+    console.error("Stock generator error:", e);
   }
 }
 
@@ -1253,10 +1191,9 @@ async function decodeVIN(vin){
   const transmission = clean(row.TransmissionStyle) || clean(row.TransmissionSpeeds ? `${row.TransmissionSpeeds}-Speed` : "");
   const drivetrain = clean(row.DriveType);
 
-  return { year, make, model, engine, transmission, drivetrain, raw: row };
+  return { year, make, model, engine, transmission, drivetrain };
 }
 
-// fills either admin form or edit form
 async function autoFillFromVIN(isEdit){
   const vinEl = isEdit ? document.getElementById("e_vin") : document.getElementById("vin");
   const v = cleanVIN(vinEl.value);
@@ -1288,14 +1225,14 @@ async function autoFillFromVIN(isEdit){
     if(d.transmission && !clean(trnEl.value)) trnEl.value = d.transmission;
     if(d.drivetrain && !clean(drvEl.value)) drvEl.value = d.drivetrain;
 
-    setNote(msgEl, msgTextEl, `Auto-filled from VIN: ${[d.year,d.make,d.model].filter(Boolean).join(" ") || "done"}.`, "ok");
+    setNote(msgEl, msgTextEl, `Auto-filled: ${[d.year,d.make,d.model].filter(Boolean).join(" ") || "done"}.`, "ok");
     showToast("VIN Auto-Fill");
   }catch(e){
-    setNote(msgEl, msgTextEl, "VIN auto-fill failed. Try again (or the VIN may be invalid).", "bad");
+    setNote(msgEl, msgTextEl, "VIN auto-fill failed: " + (e?.message || "try again"), "bad");
+    console.error("VIN autofill error:", e);
   }
 }
 
-// auto-trigger when VIN reaches 17 chars
 function hookVinAutoFill(){
   const vinInput = document.getElementById("vin");
   const eVinInput = document.getElementById("e_vin");
@@ -1314,7 +1251,7 @@ function hookVinAutoFill(){
 }
 
 /* =========================
-   ✅ PHOTO CLICK + SCROLL FIX
+   ✅ PHOTO
    ========================= */
 function enableDragScroll(el){
   let isDown=false, startX=0, startLeft=0;
@@ -1326,16 +1263,8 @@ function enableDragScroll(el){
     el.style.cursor="grabbing";
     e.preventDefault();
   });
-  window.addEventListener("mouseup",()=>{
-    if(!isDown) return;
-    isDown=false;
-    el.style.cursor="grab";
-  });
-  el.addEventListener("mouseleave",()=>{
-    if(!isDown) return;
-    isDown=false;
-    el.style.cursor="grab";
-  });
+  window.addEventListener("mouseup",()=>{ isDown=false; });
+  el.addEventListener("mouseleave",()=>{ isDown=false; });
   el.addEventListener("mousemove",(e)=>{
     if(!isDown) return;
     const dx = e.pageX - startX;
@@ -1364,10 +1293,7 @@ function openPhoto(carId, idx){
 
 function renderPhoto(){
   const arr = __photosByCarId[__currentPhoto.carId] || [];
-  if(!arr.length){
-    closePhoto();
-    return;
-  }
+  if(!arr.length){ closePhoto(); return; }
   const url = arr[__currentPhoto.idx];
   photoView.src = url;
   photoSub.textContent = `Photo ${__currentPhoto.idx+1} of ${arr.length}`;
@@ -1399,39 +1325,26 @@ function openPhotoInNewTab(){
 async function copyCurrentPhotoUrl(){
   const arr = __photosByCarId[__currentPhoto.carId] || [];
   if(!arr.length) return;
-  const url = arr[__currentPhoto.idx];
-  await copyText(url);
+  await copyText(arr[__currentPhoto.idx]);
   showToast("Photo URL copied");
 }
-
-// swipe support inside viewer
 let _swipeX=null;
-photoView.addEventListener("touchstart",(e)=>{
-  _swipeX = e.touches && e.touches[0] ? e.touches[0].clientX : null;
-},{passive:true});
+photoView.addEventListener("touchstart",(e)=>{ _swipeX = e.touches?.[0]?.clientX ?? null; },{passive:true});
 photoView.addEventListener("touchend",(e)=>{
-  if(_swipeX === null) return;
-  const endX = e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : null;
-  if(endX === null) return;
+  if(_swipeX===null) return;
+  const endX = e.changedTouches?.[0]?.clientX ?? null;
+  if(endX===null) return;
   const dx = endX - _swipeX;
-  _swipeX = null;
+  _swipeX=null;
   if(Math.abs(dx) < 40) return;
-  if(dx < 0) nextPhoto();
-  else prevPhoto();
+  if(dx < 0) nextPhoto(); else prevPhoto();
 },{passive:true});
-
-// close photo modal outside click
-photoBack.addEventListener("click",(e)=>{
-  if(e.target === photoBack) closePhoto();
-});
+photoBack.addEventListener("click",(e)=>{ if(e.target===photoBack) closePhoto(); });
 
 /* =========================
-   ✅ PARTS (subcollection)
-   inventory/{carId}/parts/{partId}
+   ✅ PARTS (PUBLIC READ, ADMIN WRITE)
    ========================= */
-function partsCol(carId){
-  return ref.doc(carId).collection("parts");
-}
+function partsCol(carId){ return ref.doc(carId).collection("parts"); }
 
 function closeParts(){
   partsBack.style.display = "none";
@@ -1442,12 +1355,13 @@ function closeParts(){
   __partsList = [];
   __editingPartId = null;
   resetPartForm();
-  setNote(partsMsg, partsMsgText, "", "");
+  partsPublicNote.style.display = "none";
+  partsPublicNoteText.textContent = "";
   if(__partsUnsub){ __partsUnsub(); __partsUnsub = null; }
 }
 
 function openParts(carId){
-  if(!isAdmin || !carId) return;
+  if(!carId) return;
   __partsCarId = carId;
 
   const car = liveCars.find(x=>x.id===carId);
@@ -1456,32 +1370,39 @@ function openParts(carId){
 
   partsSub.textContent = `${veh || "Vehicle"} • Stock: ${stock}`;
   partsBack.style.display = "block";
-  setNote(partsMsg, partsMsgText, "Loading parts…", "");
-  resetPartForm();
+
+  // public hint
+  if(!isAdmin){
+    partsPublicNote.style.display = "flex";
+    partsPublicNoteText.textContent = "View only. (Admin can add/edit/delete parts.)";
+    partsPublicNote.className = "note";
+  }else{
+    partsPublicNote.style.display = "none";
+    partsPublicNoteText.textContent = "";
+  }
 
   if(__partsUnsub){ __partsUnsub(); __partsUnsub = null; }
 
   __partsUnsub = partsCol(carId).orderBy("createdAt","desc").onSnapshot((s)=>{
     __partsList = [];
-    s.forEach(doc=>{
-      __partsList.push({ id: doc.id, ...doc.data() });
-    });
+    s.forEach(doc=>{ __partsList.push({ id: doc.id, ...doc.data() }); });
     partsCount.textContent = `${__partsList.length} part${__partsList.length===1?"":"s"}`;
-    setNote(partsMsg, partsMsgText, __partsList.length ? "Parts synced to this vehicle." : "No parts yet — add your first one above.", __partsList.length ? "ok" : "warn");
     renderParts();
-  }, ()=>{
-    setNote(partsMsg, partsMsgText, "Parts load failed. Check Firestore rules/connection.", "bad");
+  }, (e)=>{
+    partsCount.textContent = "Error";
+    partsBody.innerHTML = `<tr><td colspan="5" class="muted">Failed to load parts: ${escHtml(e?.message || "rules/connection")}</td></tr>`;
+    console.error("Parts snapshot error:", e);
   });
 }
 
-function refreshParts(){
-  if(!__partsCarId) return;
-  showToast("Refreshing…");
-  // snapshot is live; this just gives feedback
-}
+function refreshParts(){ showToast("Refreshing…"); }
 
 function renderParts(){
   partsBody.innerHTML = "";
+  if(!__partsList.length){
+    partsBody.innerHTML = `<tr><td colspan="5" class="muted">No parts listed for this vehicle.</td></tr>`;
+    return;
+  }
 
   __partsList.forEach(p=>{
     const name = escHtml(p.partName || "Part");
@@ -1489,7 +1410,7 @@ function renderParts(){
     const inter = escHtml(p.interchange || "");
     const loc = escHtml(p.location || "");
     const notes = escHtml(p.notes || "");
-    const qty = (typeof p.qty === "number") ? p.qty : parseIntSafe(p.qty, 1) ?? 1;
+    const qty = (typeof p.qty === "number") ? p.qty : (parseIntSafe(p.qty, 1) ?? 1);
     const price = (typeof p.price === "number") ? p.price : parseMoney(p.price);
     const core = (typeof p.core === "number") ? p.core : parseMoney(p.core);
 
@@ -1510,10 +1431,12 @@ function renderParts(){
         <td class="money">${price!==null ? escHtml(fmtMoney(price)) : "—"}</td>
         <td class="money">${core!==null ? escHtml(fmtMoney(core)) : "—"}</td>
         <td>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="smallBtn primary" onclick="editPart('${p.id}')">Edit</button>
-            <button class="smallBtn danger" onclick="deletePart('${p.id}')">Delete</button>
-          </div>
+          ${isAdmin ? `
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="smallBtn primary" onclick="editPart('${p.id}')">Edit</button>
+              <button class="smallBtn danger" onclick="deletePart('${p.id}')">Delete</button>
+            </div>
+          ` : `<div class="muted">View only</div>`}
         </td>
       </tr>
     `);
@@ -1521,6 +1444,7 @@ function renderParts(){
 }
 
 function resetPartForm(){
+  if(typeof p_partName === "undefined") return; // form is admin-only, but safe guard
   p_partName.value = "";
   p_partType.value = "";
   p_interchange.value = "";
@@ -1534,6 +1458,7 @@ function resetPartForm(){
 }
 
 function editPart(partId){
+  if(!isAdmin) return;
   const p = __partsList.find(x=>x.id===partId);
   if(!p) return;
 
@@ -1564,39 +1489,35 @@ async function savePart(){
 
   const price = parseMoney(p_price.value);
   const core = parseMoney(p_core.value);
-  if(price !== null) payload.price = price;
-  else payload.price = firebase.firestore.FieldValue.delete();
-  if(core !== null) payload.core = core;
-  else payload.core = firebase.firestore.FieldValue.delete();
+  if(price !== null) payload.price = price; else payload.price = firebase.firestore.FieldValue.delete();
+  if(core !== null) payload.core = core; else payload.core = firebase.firestore.FieldValue.delete();
 
   if(!payload.partName){
-    setNote(partsMsg, partsMsgText, "Part name is required.", "warn");
+    showToast("Part name required");
     return;
   }
 
   try{
     p_saveBtn.disabled = true;
-    setNote(partsMsg, partsMsgText, __editingPartId ? "Updating part…" : "Saving part…", "");
 
     if(__editingPartId){
       await partsCol(__partsCarId).doc(__editingPartId).update({
         ...payload,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      setNote(partsMsg, partsMsgText, "Part updated.", "ok");
       showToast("Updated");
     }else{
       await partsCol(__partsCarId).add({
         ...payload,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      setNote(partsMsg, partsMsgText, "Part added.", "ok");
       showToast("Added part");
     }
 
     resetPartForm();
   }catch(e){
-    setNote(partsMsg, partsMsgText, "Save failed. Check rules/connection.", "bad");
+    showToast("Save failed");
+    console.error("Save part error:", e);
   }finally{
     p_saveBtn.disabled = false;
   }
@@ -1609,21 +1530,16 @@ async function deletePart(partId){
   try{
     await partsCol(__partsCarId).doc(partId).delete();
     showToast("Part deleted");
-  }catch{
+  }catch(e){
     showToast("Delete failed");
+    console.error("Delete part error:", e);
   }
 }
 
 async function copyPartsCSV(){
-  if(!__partsList.length){
-    showToast("No parts");
-    return;
-  }
+  if(!__partsList.length){ showToast("No parts"); return; }
 
-  const rows = [
-    ["PartName","PartType","Interchange","Location","Qty","Price","Core","Notes"]
-  ];
-
+  const rows = [["PartName","PartType","Interchange","Location","Qty","Price","Core","Notes"]];
   __partsList.forEach(p=>{
     rows.push([
       String(p.partName||""),
@@ -1642,113 +1558,17 @@ async function copyPartsCSV(){
   showToast("CSV copied");
 }
 
-/* close parts modal outside click */
-partsBack.addEventListener("click",(e)=>{
-  if(e.target === partsBack) closeParts();
-});
+partsBack.addEventListener("click",(e)=>{ if(e.target === partsBack) closeParts(); });
 
 /* =========================
-   ✅ QUICK ADD PARTS by STOCK #
+   ✅ add/remove/edit vehicle
    ========================= */
-function findCarByStock(stock){
-  const s = clean(stock).toUpperCase();
-  if(!s) return null;
-  return liveCars.find(c => clean(c.stockNumber).toUpperCase() === s) || null;
-}
-
-function quickClear(){
-  qp_stock.value = "";
-  qp_vehicle.value = "";
-  qp_partName.value = "";
-  qp_partType.value = "";
-  qp_interchange.value = "";
-  qp_location.value = "";
-  qp_qty.value = "";
-  qp_price.value = "";
-  qp_core.value = "";
-  qp_notes.value = "";
-  __quickCarId = null;
-  setNote(qpMsg, qpMsgText, "", "");
-}
-
-function quickFindStock(){
-  const stock = clean(qp_stock.value);
-  if(!stock){
-    setNote(qpMsg, qpMsgText, "Enter a Stock # first.", "warn");
-    return;
-  }
-
-  const car = findCarByStock(stock);
-  if(!car){
-    __quickCarId = null;
-    qp_vehicle.value = "";
-    setNote(qpMsg, qpMsgText, "No vehicle found for that Stock #.", "bad");
-    return;
-  }
-
-  __quickCarId = car.id;
-  qp_vehicle.value = `${clean(car.year)} ${clean(car.make)} ${clean(car.model)}`.trim();
-  setNote(qpMsg, qpMsgText, "Vehicle found. Add the part fields and hit Add Part.", "ok");
-  showToast("Vehicle found");
-}
-
-async function quickAddPart(){
-  if(!isAdmin) return;
-
-  const stock = clean(qp_stock.value);
-  const car = findCarByStock(stock);
-
-  if(!car){
-    setNote(qpMsg, qpMsgText, "Stock # not found. Hit Find Vehicle first.", "warn");
-    return;
-  }
-
-  const payload = {
-    partName: clean(qp_partName.value),
-    partType: clean(qp_partType.value),
-    interchange: clean(qp_interchange.value),
-    location: clean(qp_location.value),
-    qty: Math.max(1, parseIntSafe(qp_qty.value, 1) || 1),
-    notes: clean(qp_notes.value),
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-
-  const price = parseMoney(qp_price.value);
-  const core = parseMoney(qp_core.value);
-  if(price !== null) payload.price = price;
-  if(core !== null) payload.core = core;
-
-  if(!payload.partName){
-    setNote(qpMsg, qpMsgText, "Part name is required.", "warn");
-    return;
-  }
-
-  try{
-    qp_addBtn.disabled = true;
-    setNote(qpMsg, qpMsgText, "Adding part…", "");
-    await partsCol(car.id).add(payload);
-
-    // quick keep stock and vehicle, clear only part fields
-    qp_partName.value = "";
-    qp_partType.value = "";
-    qp_interchange.value = "";
-    qp_location.value = "";
-    qp_qty.value = "";
-    qp_price.value = "";
-    qp_core.value = "";
-    qp_notes.value = "";
-
-    setNote(qpMsg, qpMsgText, `Part added to ${clean(car.stockNumber)}.`, "ok");
-    showToast("Part added");
-  }catch(e){
-    setNote(qpMsg, qpMsgText, "Add failed. Check rules/connection.", "bad");
-  }finally{
-    qp_addBtn.disabled = false;
-  }
-}
-
-/* ===== add/remove/edit vehicle ===== */
 async function addCar(){
+  if(!auth.currentUser){
+    setNote(adminMsg, adminMsgText, "Login first (tap logo 3x).", "warn");
+    return;
+  }
+
   const stock = clean(stockNumber.value);
   const y = clean(year.value);
   const mk = clean(make.value);
@@ -1766,7 +1586,7 @@ async function addCar(){
   const photos = parsePhotoUrls(document.getElementById("photoUrls").value);
 
   if(!y || !mk || !md){
-    setNote(adminMsg, adminMsgText, "Year, Make, and Model are required. (Tip: paste VIN to auto-fill.)", "warn");
+    setNote(adminMsg, adminMsgText, "Year, Make, and Model are required.", "warn");
     return;
   }
   if(v && !validVIN(v)){
@@ -1778,7 +1598,6 @@ async function addCar(){
   setNote(adminMsg, adminMsgText, "Saving…", "");
 
   try{
-    // ✅ ensure stock #
     let finalStock = stock;
     if(!finalStock){
       finalStock = await nextStockNumber();
@@ -1815,7 +1634,8 @@ async function addCar(){
     showToast("Added");
 
   }catch(e){
-    setNote(adminMsg, adminMsgText, "Save failed. Check connection/rules.", "bad");
+    setNote(adminMsg, adminMsgText, "Save failed: " + (e?.message || "rules/connection"), "bad");
+    console.error("Add vehicle error:", e);
   }
 
   addBtn.disabled = false;
@@ -1823,18 +1643,19 @@ async function addCar(){
 
 async function removeCar(id){
   if(!isAdmin) return;
-  if(!confirm("Delete this vehicle? (parts will remain only if rules allow orphaned data)")) return;
+  if(!confirm("Delete this vehicle?")) return;
 
   try{
     await ref.doc(id).delete();
     showToast("Deleted");
-  }catch{
+  }catch(e){
     showToast("Delete failed");
+    console.error("Remove vehicle error:", e);
   }
 }
 
 function scrollToAdmin(){
-  adminPanel.scrollIntoView({behavior:"smooth", block:"start"});
+  document.getElementById("adminPanel").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 /* ===== EDIT FLOW ===== */
@@ -1901,7 +1722,6 @@ async function saveEdit(){
   setNote(editMsg, editMsgText, "Saving…", "");
 
   try{
-    // ✅ ensure stock #
     let finalStock = stock;
     if(!finalStock){
       finalStock = await nextStockNumber();
@@ -1920,17 +1740,11 @@ async function saveEdit(){
       drivetrain:drv
     };
 
-    if(miles === null){
-      updates.mileage = firebase.firestore.FieldValue.delete();
-    }else{
-      updates.mileage = miles;
-    }
+    if(miles === null) updates.mileage = firebase.firestore.FieldValue.delete();
+    else updates.mileage = miles;
 
-    if(!photos.length){
-      updates.photos = firebase.firestore.FieldValue.delete();
-    }else{
-      updates.photos = photos;
-    }
+    if(!photos.length) updates.photos = firebase.firestore.FieldValue.delete();
+    else updates.photos = photos;
 
     updates.goodMotor = (gm === null) ? firebase.firestore.FieldValue.delete() : gm;
     updates.goodTrans = (gt === null) ? firebase.firestore.FieldValue.delete() : gt;
@@ -1939,10 +1753,11 @@ async function saveEdit(){
 
     setNote(editMsg, editMsgText, "Saved.", "ok");
     showToast("Saved");
-    setTimeout(closeEdit, 550);
+    setTimeout(closeEdit, 450);
 
   }catch(e){
-    setNote(editMsg, editMsgText, "Save failed. Check connection/rules.", "bad");
+    setNote(editMsg, editMsgText, "Save failed: " + (e?.message || "rules/connection"), "bad");
+    console.error("Save edit error:", e);
   }
 
   saveBtn.disabled = false;
@@ -1956,15 +1771,13 @@ async function deleteFromEdit(){
     await ref.doc(editingId).delete();
     showToast("Deleted");
     closeEdit();
-  }catch{
+  }catch(e){
     showToast("Delete failed");
+    console.error("Delete from edit error:", e);
   }
 }
 
-/* Close modal on outside click */
-editBack.addEventListener("click",(e)=>{
-  if(e.target === editBack) closeEdit();
-});
+editBack.addEventListener("click",(e)=>{ if(e.target === editBack) closeEdit(); });
 document.addEventListener("keydown",(e)=>{
   if(e.key === "Escape"){
     closeEdit();
@@ -1983,18 +1796,17 @@ function startListener(){
 
   unsub = ref.orderBy("createdAt","desc").onSnapshot(s=>{
     liveCars = [];
-    s.forEach(doc=>{
-      liveCars.push({ id: doc.id, ...doc.data() });
-    });
+    s.forEach(doc=>{ liveCars.push({ id: doc.id, ...doc.data() }); });
 
     countLine.textContent = `${liveCars.length} vehicles`;
     liveHint.textContent = "Live sync on";
-    setNote(invMsg, invMsgText, liveCars.length ? "Tap Stock/VIN to copy. Admin: open Parts per vehicle." : "No vehicles yet.", liveCars.length ? "" : "warn");
+    setNote(invMsg, invMsgText, liveCars.length ? "Tap Stock/VIN to copy. Click Parts to view parts." : "No vehicles yet.", liveCars.length ? "" : "warn");
     applyFilters();
-  }, ()=>{
-    setNote(invMsg, invMsgText, "Live sync failed. Check Firestore rules/connection.", "bad");
+  }, (err)=>{
+    setNote(invMsg, invMsgText, "Live sync failed: " + (err?.message || "rules/connection"), "bad");
     countLine.textContent = "Error";
     liveHint.textContent = "Offline";
+    console.error("Inventory snapshot error:", err);
   });
 }
 
@@ -2013,7 +1825,7 @@ function applyFilters(){
   if(q){
     list = list.filter(c=>{
       const blob = [
-        c.stockNumber, // ✅ searchable
+        c.stockNumber,
         c.year, c.make, c.model, c.vin, c.color, c.engine, c.transmission, c.drivetrain,
         c.mileage,
         (c.goodMotor===true ? "good motor" : c.goodMotor===false ? "bad motor" : ""),
@@ -2043,7 +1855,6 @@ function applyFilters(){
   document.querySelectorAll(".photoTrack").forEach(enableDragScroll);
 }
 
-/* derive a sortable timestamp from Firestore Timestamp if present */
 function getMs(t){
   try{
     if(!t) return 0;
@@ -2133,8 +1944,9 @@ function renderTable(list){
           <div class="copyLine">
             ${stockVal ? `<button class="smallBtn" onclick="copyText('${stockVal}')">Copy Stock</button>` : ``}
             ${vinVal ? `<button class="smallBtn ghost" onclick="copyText('${vinVal}')">Copy VIN</button>` : ``}
+            <button class="smallBtn" onclick="openParts('${c.id}')">Parts</button>
+            ${vinVal ? `<button class="smallBtn ghost" onclick="copyText('${vehicleLine} • ${vinVal}')">Copy Line</button>` : ``}
           </div>
-
           <div class="specs" style="margin-top:8px">
             ${stockVal ? `<div><strong>Stock:</strong> ${stockVal}</div>` : `<div>Stock: —</div>`}
             ${vinVal ? `<div><strong>VIN:</strong> ${vinVal}</div>` : `<div>VIN: —</div>`}
@@ -2173,16 +1985,10 @@ function clearSearch(){
   applyFilters();
 }
 
-/* ===== restore admin session ===== */
+/* init */
 (function init(){
-  const saved = localStorage.getItem("tlb_admin") === "1";
-  setAdminUI(saved);
-
   hookVinAutoFill();
   startListener();
-
-  // ✅ nice default qty
-  if(document.getElementById("p_qty")) p_qty.value="1";
 
   setNote(invMsg, invMsgText, "Loading inventory…", "");
   setNote(loginMsg, loginMsgText, "", "");
@@ -2192,3 +1998,4 @@ function clearSearch(){
 
 </body>
 </html>
+
