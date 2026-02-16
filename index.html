@@ -16,174 +16,144 @@
 
 <style>
 :root{
-  --bg:#0b0f14;
-  --panel:#101826;
-  --panel-soft:#0f172a;
-  --card:#0d1626;
+  /* Apple-ish dark glass */
+  --bg:#06070a;
+  --bg2:#0b0f14;
+  --panel:rgba(16, 20, 30, .62);
+  --panel2:rgba(16, 20, 30, .40);
+  --stroke:rgba(255,255,255,.10);
+  --stroke2:rgba(255,255,255,.14);
+  --text:#f5f7fb;
+  --muted:rgba(245,247,251,.68);
+  --muted2:rgba(245,247,251,.52);
+
   --accent:#f4c430;
   --accent2:#ffb703;
-  --text:#f9fafb;
-  --muted:#9ca3af;
-  --danger:#ff4d4d;
-  --ok:#22c55e;
-  --warn:#f59e0b;
-  --border:rgba(255,255,255,.10);
-  --shadow:0 30px 70px rgba(0,0,0,.60);
-  --radius:18px;
-  --radius2:14px;
-  --glass:rgba(11,15,20,.72);
+
+  --ok:#34c759;
+  --warn:#ff9f0a;
+  --danger:#ff453a;
+
+  --r:20px;
+  --r2:14px;
+
+  --shadow:0 16px 55px rgba(0,0,0,.55);
+  --shadow2:0 26px 80px rgba(0,0,0,.62);
+
+  --blur:14px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 html,body{width:100%;max-width:100%;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
-::selection{background:rgba(244,196,48,.22)}
+img{max-width:100%;height:auto}
+::selection{background:rgba(244,196,48,.20)}
 
 body{
-  background:
-    radial-gradient(1000px 600px at 15% -10%, rgba(244,196,48,.16), transparent 60%),
-    radial-gradient(1000px 600px at 90% 0%, rgba(255,183,3,.12), transparent 60%),
-    radial-gradient(900px 500px at 40% 115%, rgba(31,41,55,.28), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,.02), transparent 22%),
-    var(--bg);
   color:var(--text);
+  background:
+    radial-gradient(900px 650px at 15% -10%, rgba(244,196,48,.14), transparent 60%),
+    radial-gradient(900px 650px at 90% 0%, rgba(255,183,3,.10), transparent 60%),
+    radial-gradient(900px 650px at 50% 115%, rgba(80,110,255,.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.03), transparent 18%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
   padding-left:env(safe-area-inset-left);
   padding-right:env(safe-area-inset-right);
   padding-bottom:calc(env(safe-area-inset-bottom) + 18px);
   -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
 
-@media (prefers-reduced-motion:no-preference){
-  .lift{transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
-  .lift:hover{transform:translateY(-2px); box-shadow:0 40px 85px rgba(0,0,0,.62); border-color:rgba(244,196,48,.30)}
+/* Reduce motion */
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto !important; transition:none !important; animation:none !important;}
 }
 
-/* HEADER */
+/* Glass helpers */
+.glass{
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)), var(--panel);
+  border:1px solid var(--stroke2);
+  border-radius:var(--r);
+  box-shadow:var(--shadow);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+  .glass{
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+  }
+}
+@media(max-width:700px){
+  /* blur is heavy on phones */
+  .glass{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+}
+
+/* Header */
 header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:rgba(11,15,20,.88);
-  backdrop-filter:blur(12px);
+  position:sticky; top:0; z-index:100;
+  background:rgba(6,7,10,.70);
   border-bottom:1px solid rgba(255,255,255,.08);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+  header{-webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);}
+}
+@media(max-width:700px){
+  header{-webkit-backdrop-filter:none !important; backdrop-filter:none !important;}
 }
 
 .header-inner{
-  max-width:1200px;
-  margin:auto;
+  max-width:1200px; margin:auto;
   padding:12px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  flex-wrap:wrap;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:14px; flex-wrap:wrap;
 }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  min-width:240px;
-}
-
+.brand{display:flex; align-items:center; gap:12px; min-width:240px;}
 .logo{
-  width:64px;
-  height:64px;
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-  border-radius:0;
+  width:58px; height:58px;
   object-fit:contain;
-  display:block;
   cursor:pointer;
-  image-rendering:auto;
-  filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.50));
 }
-
-@media(max-width:700px){
-  .logo{ width:58px; height:58px; }
-}
-
 .titleWrap h2{
-  font-size:1.05rem;
-  letter-spacing:.2px;
-  font-weight:950;
+  font-size:1.15rem; font-weight:900; letter-spacing:.2px;
 }
 .titleWrap .sub{
-  color:var(--muted);
-  font-size:.85rem;
-  margin-top:2px;
+  margin-top:2px; font-size:.86rem; color:var(--muted);
 }
 
-.header-actions{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
+.header-actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
 
 .pill{
-  text-decoration:none;
-  font-weight:950;
   padding:9px 12px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.05);
+  font-weight:850;
   color:var(--text);
-  background:rgba(15,23,42,.55);
   user-select:none;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color:transparent;
 }
-
 .pill.primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#000;
   border:none;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  color:#000;
 }
 .pill:active{transform:scale(.99)}
 
-/* MAIN */
-main{
-  max-width:1200px;
-  margin:auto;
-  padding:22px 16px 42px;
-}
+/* Main */
+main{max-width:1200px; margin:auto; padding:22px 16px 42px;}
 
-/* CARD */
-.card{
-  background:
-    radial-gradient(700px 280px at 0% 0%, rgba(244,196,48,.09), transparent 55%),
-    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
-    var(--panel);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:var(--radius);
-  padding:18px;
-  box-shadow:var(--shadow);
-  margin-bottom:18px;
-}
-
+/* Cards */
+.card{padding:18px; margin-bottom:18px;}
 .cardHead{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:12px;
-  flex-wrap:wrap;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:12px; flex-wrap:wrap;
 }
+.card h3{font-size:1.05rem; font-weight:900;}
+.mini{font-size:.85rem; font-weight:800; color:var(--muted);}
 
-.card h3{font-size:1.05rem; font-weight:950}
-.mini{
-  color:var(--muted);
-  font-size:.85rem;
-  font-weight:800;
-}
+.sep{border:none; height:1px; background:rgba(255,255,255,.10); margin:14px 0;}
 
-hr.sep{
-  border:none;
-  height:1px;
-  background:rgba(255,255,255,.10);
-  margin:14px 0;
-}
-
-/* FORMS */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
@@ -191,171 +161,121 @@ hr.sep{
 }
 
 input,button,select,textarea{
-  background:#0f1422;
-  color:#fff;
-  border:1px solid rgba(255,255,255,.15);
+  background:rgba(12,14,20,.78);
+  color:var(--text);
+  border:1px solid rgba(255,255,255,.14);
   padding:12px;
-  border-radius:var(--radius2);
+  border-radius:var(--r2);
   outline:none;
 }
-
 textarea{min-height:44px; resize:vertical}
-input::placeholder, textarea::placeholder{color:rgba(156,163,175,.85)}
+input::placeholder, textarea::placeholder{color:rgba(245,247,251,.45)}
 
 input:focus,select:focus,textarea:focus{
   border-color:rgba(244,196,48,.65);
   box-shadow:0 0 0 4px rgba(244,196,48,.14);
 }
 
-button{cursor:pointer;font-weight:950}
-button[disabled]{opacity:.6;cursor:not-allowed}
-
-button.primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#000;
-  border:none;
-}
-
-button.danger{
-  background:var(--danger);
-  border:none;
-  color:#000;
-}
-
-button.ghost{
-  background:rgba(255,255,255,.06);
-}
+button{cursor:pointer; font-weight:900;}
+button[disabled]{opacity:.6; cursor:not-allowed;}
+button.primary{border:none; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#000;}
+button.ghost{background:rgba(255,255,255,.06);}
+button.danger{border:none; background:var(--danger); color:#000;}
 
 .note{
   margin-top:10px;
   font-size:12px;
   min-height:18px;
   color:var(--muted);
-  display:flex;
-  align-items:center;
-  gap:8px;
+  display:flex; align-items:center; gap:8px;
 }
-.note .dot{
-  width:8px;height:8px;border-radius:50%;
-  background:rgba(255,255,255,.18);
-  box-shadow:0 0 0 3px rgba(255,255,255,.06);
-}
-.note.ok{color:var(--ok)}
-.note.ok .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
-.note.bad{color:var(--danger)}
-.note.bad .dot{background:var(--danger);box-shadow:0 0 0 3px rgba(255,77,77,.18)}
-.note.warn{color:var(--warn)}
-.note.warn .dot{background:var(--warn);box-shadow:0 0 0 3px rgba(245,158,11,.18)}
+.note .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);box-shadow:0 0 0 3px rgba(255,255,255,.06);}
+.note.ok{color:var(--ok)} .note.ok .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(52,199,89,.18)}
+.note.bad{color:var(--danger)} .note.bad .dot{background:var(--danger);box-shadow:0 0 0 3px rgba(255,69,58,.18)}
+.note.warn{color:var(--warn)} .note.warn .dot{background:var(--warn);box-shadow:0 0 0 3px rgba(255,159,10,.18)}
 
-/* FILTER BAR */
+/* Toolbar */
 .toolbar{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
-  margin-top:12px;
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px;
 }
-.toolbar input{ flex:1 1 260px; }
-
-.smallHint{
+.toolbar .searchWrap{flex:1 1 320px; position:relative;}
+.searchWrap input{width:100%; padding-left:40px;}
+.searchIcon{
+  position:absolute; left:12px; top:50%; transform:translateY(-50%);
+  width:18px; height:18px; opacity:.75;
+}
+.chips{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+.chip{
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+  padding:8px 10px;
+  border-radius:999px;
+  font-weight:850;
   font-size:12px;
-  color:var(--muted);
-  display:flex;
-  align-items:center;
-  gap:8px;
+  cursor:pointer;
+  user-select:none;
 }
-.pulseDot{
-  width:8px;height:8px;border-radius:50%;
-  background:rgba(244,196,48,.85);
-  box-shadow:0 0 0 6px rgba(244,196,48,.12);
+.chip.on{
+  border-color:rgba(244,196,48,.32);
+  box-shadow:0 0 0 4px rgba(244,196,48,.10) inset;
 }
+.smallHint{font-size:12px; color:var(--muted); display:flex; align-items:center; gap:8px;}
+.pulseDot{width:8px;height:8px;border-radius:50%;background:rgba(244,196,48,.85);box-shadow:0 0 0 6px rgba(244,196,48,.12);}
 
-/* TABLE */
-.table-wrap{
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-  max-height:560px;
-  overflow-y:auto;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(15,23,42,.16);
-
-  -ms-overflow-style:none;
-  scrollbar-width:none;
+/* Inventory layout */
+.split{
+  display:grid;
+  grid-template-columns:1.25fr .75fr;
+  gap:14px;
+  margin-top:14px;
 }
-.table-wrap::-webkit-scrollbar{width:0;height:0;display:none}
-
-table{
-  width:100%;
-  min-width:980px;
-  border-collapse:collapse;
-  margin-top:12px;
+@media(max-width:980px){
+  .split{grid-template-columns:1fr;}
 }
 
-table thead th{
-  position:sticky;
-  top:0;
-  z-index:2;
-  background:rgba(11,15,20,.96);
-  backdrop-filter:blur(10px);
-}
+.list{display:grid; gap:12px;}
 
-th,td{
+.vehicleCard{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)), rgba(10,12,18,.55);
+  box-shadow:0 10px 30px rgba(0,0,0,.30);
   padding:12px;
-  border-bottom:1px solid rgba(255,255,255,.10);
-  vertical-align:top;
+  display:grid;
+  grid-template-columns:132px 1fr;
+  gap:12px;
+  cursor:pointer;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.vehicleCard:hover{
+  transform:translateY(-1px);
+  border-color:rgba(244,196,48,.22);
+  box-shadow:0 18px 45px rgba(0,0,0,.42);
+}
+@media(max-width:700px){
+  .vehicleCard{grid-template-columns:120px 1fr;}
 }
 
-th{
-  color:var(--accent);
-  font-weight:950;
-  font-size:.9rem;
-}
+.vTitle{font-weight:950; letter-spacing:.2px; font-size:1rem; line-height:1.1;}
+.vSub{margin-top:6px; color:var(--muted); font-size:13px; line-height:1.35;}
 
-td strong{font-weight:950}
-
-.specs{
-  font-size:13px;
-  color:var(--muted);
-  margin-top:4px;
-  line-height:1.35;
-}
-
-.kv{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:8px;
-}
+.kv{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
 .tag{
   font-size:11px;
   padding:6px 10px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
   color:var(--text);
-  background:rgba(15,23,42,.55);
   font-weight:900;
 }
+.tag.ok{border-color:rgba(52,199,89,.30); background:rgba(52,199,89,.10);}
+.tag.bad{border-color:rgba(255,69,58,.30); background:rgba(255,69,58,.10);}
+.tag.miles{border-color:rgba(244,196,48,.30); background:rgba(244,196,48,.10);}
+.tag.stock{border-color:rgba(244,196,48,.30); background:rgba(244,196,48,.08);}
 
-.tag.ok{
-  border-color: rgba(34,197,94,.35);
-  background: rgba(34,197,94,.10);
-}
-.tag.bad{
-  border-color: rgba(255,77,77,.35);
-  background: rgba(255,77,77,.10);
-}
-.tag.miles{
-  border-color: rgba(244,196,48,.35);
-  background: rgba(244,196,48,.10);
-  color:#fff;
-}
-.tag.stock{
-  border-color: rgba(244,196,48,.35);
-  background: rgba(244,196,48,.08);
-}
-
-/* Small action buttons in table */
+.actionsRow{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
 .smallBtn{
   padding:9px 10px;
   border-radius:12px;
@@ -364,24 +284,102 @@ td strong{font-weight:950}
   background:rgba(255,255,255,.06);
   color:var(--text);
 }
+.smallBtn.primary{border:none; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#000;}
+.smallBtn.danger{border:none; background:var(--danger); color:#000;}
 .smallBtn:active{transform:scale(.99)}
-.smallBtn.danger{background:var(--danger);border:none;color:#000}
-.smallBtn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none}
 
-/* ADMIN VISIBILITY */
-.admin-only{ display:none; }
-body.is-admin .admin-flex{ display:inline-flex; }
-body.is-admin .admin-block{ display:block; }
-body.is-admin th.admin-cell,
-body.is-admin td.admin-cell{ display:table-cell; }
+/* Photo square */
+.photoSquare{
+  width:132px; height:132px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:radial-gradient(120px 120px at 30% 20%, rgba(244,196,48,.14), transparent 60%), rgba(255,255,255,.04);
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 12px 28px rgba(0,0,0,.32);
+}
+@media(max-width:700px){
+  .photoSquare{width:120px;height:120px;}
+}
+.photoTrack{
+  width:100%; height:100%;
+  display:flex;
+  overflow-x:auto; overflow-y:hidden;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  touch-action:pan-x;
+  cursor:grab;
+}
+.photoTrack::-webkit-scrollbar{display:none}
+.photoTrack:active{cursor:grabbing}
+.photoTrack img{
+  width:132px; height:132px;
+  object-fit:cover;
+  flex:0 0 auto;
+  scroll-snap-align:start;
+  user-select:none;
+  -webkit-user-drag:none;
+  cursor:pointer;
+}
+@media(max-width:700px){
+  .photoTrack img{width:120px;height:120px;}
+}
+.photoFallback{
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(245,247,251,.55);
+  font-weight:950; font-size:12px;
+  letter-spacing:.2px;
+}
+.photoBadge{
+  position:absolute; top:8px; left:8px;
+  padding:6px 8px;
+  border-radius:999px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:11px; font-weight:950;
+  color:#fff;
+  display:none;
+  pointer-events:none;
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+  .photoBadge{-webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);}
+}
+.photoSquare.hasPhotos .photoBadge{display:inline-block}
+.photoBadge span{color:rgba(244,196,48,.95)}
 
-/* TOAST */
+/* Detail pane */
+.detailPane{
+  position:sticky;
+  top:92px;
+  align-self:start;
+  padding:14px;
+}
+@media(max-width:980px){
+  .detailPane{position:relative; top:auto;}
+}
+.dHead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
+.dTitle{font-weight:950; font-size:1.05rem; letter-spacing:.2px;}
+.dMini{color:var(--muted); font-size:12px; font-weight:850; margin-top:4px;}
+.dBlock{margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,.10);}
+.dLine{display:flex; justify-content:space-between; gap:10px; font-size:13px; color:var(--muted);}
+.dLine b{color:var(--text); font-weight:900;}
+.dBtns{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+.emptyDetail{display:none;} /* <<< removed the placeholder look */
+
+/* Admin visibility */
+.admin-only{display:none;}
+body.is-admin .admin-flex{display:inline-flex;}
+body.is-admin .admin-block{display:block;}
+
+/* Toast */
 .toast{
   position:fixed;
   left:50%;
   transform:translateX(-50%);
   bottom:calc(env(safe-area-inset-bottom) + 14px);
-  background:rgba(15,23,42,.92);
+  background:rgba(16, 20, 30, .92);
   border:1px solid rgba(255,255,255,.12);
   padding:10px 12px;
   border-radius:12px;
@@ -392,11 +390,11 @@ body.is-admin td.admin-cell{ display:table-cell; }
   box-shadow:0 20px 40px rgba(0,0,0,.45);
 }
 
-/* MODAL */
+/* Modal */
 .modalBack{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.65);
+  background:rgba(0,0,0,.66);
   display:none;
   z-index:9998;
   padding:18px;
@@ -404,31 +402,15 @@ body.is-admin td.admin-cell{ display:table-cell; }
 .modal{
   max-width:920px;
   margin:6vh auto 0;
-  background:
-    radial-gradient(700px 300px at 0% 0%, rgba(244,196,48,.10), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
-    var(--panel);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
   padding:18px;
 }
 .modalHead{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
 }
-.modalHead h3{ font-size:1.05rem; font-weight:950 }
-.modalActions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
+.modalHead h3{font-size:1.05rem;font-weight:950;}
+.modalActions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
 .xBtn{
-  width:42px;height:42px;
-  border-radius:12px;
+  width:42px;height:42px;border-radius:12px;
   border:1px solid rgba(255,255,255,.12);
   background:rgba(255,255,255,.06);
   color:var(--text);
@@ -436,109 +418,12 @@ body.is-admin td.admin-cell{ display:table-cell; }
   cursor:pointer;
 }
 
-/* PHOTO SQUARE */
-.gallery{ display:flex; align-items:flex-start; gap:12px; }
-
-.photoSquare{
-  width:112px;
-  height:112px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.12);
-  background:
-    radial-gradient(120px 120px at 30% 20%, rgba(244,196,48,.14), transparent 60%),
-    rgba(255,255,255,.04);
-  overflow:hidden;
-  position:relative;
-  flex:0 0 auto;
-  box-shadow:0 18px 40px rgba(0,0,0,.35);
-}
-
-.photoTrack{
-  width:100%;
-  height:100%;
-  display:flex;
-  overflow-x:auto;
-  overflow-y:hidden;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  touch-action:pan-x;
-  cursor:grab;
-}
-.photoTrack:active{ cursor:grabbing; }
-.photoTrack::-webkit-scrollbar{display:none}
-.photoTrack img{
-  width:112px;
-  height:112px;
-  object-fit:cover;
-  flex:0 0 auto;
-  scroll-snap-align:start;
-  user-select:none;
-  -webkit-user-drag:none;
-  pointer-events:auto;
-  cursor:pointer;
-}
-
-.photoFallback{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:rgba(156,163,175,.95);
-  font-weight:950;
-  font-size:12px;
-  letter-spacing:.2px;
-}
-
-.photoBadge{
-  position:absolute;
-  top:8px;
-  left:8px;
-  padding:6px 8px;
-  border-radius:999px;
-  background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.14);
-  font-size:11px;
-  font-weight:950;
-  color:#fff;
-  backdrop-filter:blur(8px);
-  display:none;
-  pointer-events:none;
-}
-.photoSquare.hasPhotos .photoBadge{display:inline-block}
-.photoBadge span{color:rgba(244,196,48,.95)}
-
-.copyLine{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
-}
-
-/* PHOTO VIEWER */
-.photoViewer{ display:flex; flex-direction:column; gap:12px; }
-.photoViewerTop{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-.photoViewerImgWrap{
-  width:100%;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.12);
-  overflow:hidden;
-  background:rgba(255,255,255,.04);
-  max-height:70vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-#photoView{ max-width:100%; max-height:70vh; object-fit:contain; display:block; }
-.photoViewerNav{ display:flex; gap:10px; flex-wrap:wrap; }
-
-/* PARTS */
+/* Parts styles (kept) */
 .partsWrap{
   border:1px solid rgba(255,255,255,.10);
   border-radius:14px;
   overflow:hidden;
-  background:rgba(15,23,42,.18);
+  background:rgba(255,255,255,.03);
 }
 .partsHeader{
   display:flex;
@@ -550,72 +435,41 @@ body.is-admin td.admin-cell{ display:table-cell; }
   border-bottom:1px solid rgba(255,255,255,.10);
 }
 .partsHeader .mini{margin:0}
-.partsTable{
-  width:100%;
-  border-collapse:collapse;
-}
-.partsTable th, .partsTable td{
-  padding:10px 12px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.partsTable th{
-  color:var(--accent);
-  font-size:.85rem;
-  text-align:left;
-}
-.partsTable td{ font-size:.92rem; }
-.partsTools{ display:flex; gap:8px; flex-wrap:wrap; }
+.partsTable{width:100%;border-collapse:collapse;}
+.partsTable th,.partsTable td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08);}
+.partsTable th{color:rgba(244,196,48,.95);font-size:.85rem;text-align:left;}
+.partsTable td{font-size:.92rem;}
+.partsTools{display:flex; gap:8px; flex-wrap:wrap;}
 .badgeQty{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  font-weight:950;
-  font-size:12px;
+  display:inline-flex; align-items:center; gap:6px;
+  font-weight:950; font-size:12px;
   padding:6px 10px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.12);
   background:rgba(255,255,255,.06);
 }
-.badgeQty span{ color: rgba(244,196,48,.95); }
-.money{ font-weight:950; }
-.muted{ color:var(--muted); font-size:12px; }
+.badgeQty span{color:rgba(244,196,48,.95);}
+.money{font-weight:950;}
+.muted{color:var(--muted); font-size:12px;}
 
-/* MOBILE */
-@media(max-width:700px){
-  html,body{ overflow-x:hidden; }
-
-  .table-wrap{ overflow-x:hidden; max-height:none; border:0; background:transparent; padding:0; }
-
-  table{ min-width:0 !important; width:100%; margin-top:12px; }
-  thead{ display:none; }
-  tbody, tr, td{ display:block; width:100%; }
-
-  tr{
-    background:rgba(15,23,42,.35);
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:16px;
-    padding:12px;
-    margin:12px 0;
-  }
-
-  td{ border:none; padding:0; }
-  td + td{ margin-top:12px; }
-  body.is-admin td.admin-cell{ display:block; }
-
-  .photoSquare{ width:104px; height:104px; }
-  .photoTrack img{ width:104px; height:104px; }
-
-  .partsHeader{ gap:12px; }
-  .partsTable thead{ display:none; }
-  .partsTable, .partsTable tbody, .partsTable tr, .partsTable td{ display:block; width:100%; }
-  .partsTable tr{ border-bottom:1px solid rgba(255,255,255,.10); padding:10px 12px; }
-  .partsTable td{ border:none; padding:6px 0; }
+/* Photo viewer */
+.photoViewer{display:flex; flex-direction:column; gap:12px;}
+.photoViewerTop{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.photoViewerImgWrap{
+  width:100%;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  overflow:hidden;
+  background:rgba(255,255,255,.04);
+  max-height:70vh;
+  display:flex; align-items:center; justify-content:center;
 }
+#photoView{max-width:100%;max-height:70vh;object-fit:contain;display:block;}
+.photoViewerNav{display:flex; gap:10px; flex-wrap:wrap;}
 </style>
 </head>
 
 <body>
-
 <div class="toast" id="toast">Copied</div>
 
 <header>
@@ -644,7 +498,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 <main>
 
   <!-- LOGIN (hidden until secret tap) -->
-  <div class="card lift" id="loginCard" style="display:none">
+  <div class="card glass" id="loginCard" style="display:none">
     <div class="cardHead">
       <div>
         <h3>Admin Login</h3>
@@ -661,21 +515,28 @@ body.is-admin td.admin-cell{ display:table-cell; }
   </div>
 
   <!-- INVENTORY -->
-  <div class="card lift">
+  <div class="card glass" id="invCard">
     <div class="cardHead">
       <div>
         <h3>Current Inventory</h3>
         <div class="mini" id="countLine">Loading…</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <div class="smallHint"><span class="pulseDot"></span><span id="liveHint">Live sync on</span></div>
+        <div class="smallHint"><span class="pulseDot"></span><span id="liveHint">Connecting…</span></div>
         <button class="smallBtn admin-only admin-flex" onclick="scrollToAdmin()">+ Add Vehicle</button>
       </div>
     </div>
 
     <div class="toolbar">
-      <input id="search" placeholder="Search stock #, year, make, model, VIN, engine, mileage…" oninput="applyFilters()">
-      <select id="sort" onchange="applyFilters()">
+      <div class="searchWrap">
+        <svg class="searchIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="rgba(245,247,251,.65)" stroke-width="2"/>
+          <path d="M16.5 16.5 21 21" stroke="rgba(245,247,251,.65)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="search" placeholder="Search stock #, year, make, model, VIN, engine, mileage…" oninput="queueApplyFilters()">
+      </div>
+
+      <select id="sort" onchange="queueApplyFilters()">
         <option value="newest">Sort: Newest</option>
         <option value="oldest">Sort: Oldest</option>
         <option value="yearDesc">Sort: Year (High → Low)</option>
@@ -684,27 +545,45 @@ body.is-admin td.admin-cell{ display:table-cell; }
         <option value="milesAsc">Sort: Mileage (Low → High)</option>
         <option value="milesDesc">Sort: Mileage (High → Low)</option>
       </select>
-      <button class="smallBtn ghost" onclick="clearSearch()">Clear</button>
+
+      <button class="smallBtn" onclick="clearSearch()">Clear</button>
+
+      <div class="chips" style="width:100%">
+        <div class="chip" id="chipPhotos" onclick="toggleChip('photos')">Has Photos</div>
+        <div class="chip" id="chipGoodMotor" onclick="toggleChip('goodMotor')">Good Motor</div>
+        <div class="chip" id="chipGoodTrans" onclick="toggleChip('goodTrans')">Good Trans</div>
+        <div class="chip" id="chipUnder100k" onclick="toggleChip('under100k')">Under 100k mi</div>
+      </div>
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:56%">Vehicle</th>
-            <th style="width:24%">VIN / Stock</th>
-            <th style="width:20%" class="admin-only admin-cell">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="inventoryBody"></tbody>
-      </table>
-    </div>
+    <div class="split">
+      <div>
+        <div class="list" id="inventoryList"></div>
+        <div id="invMsg" class="note" style="margin-top:12px"><span class="dot"></span><span id="invMsgText"></span></div>
+      </div>
 
-    <div id="invMsg" class="note"><span class="dot"></span><span id="invMsgText"></span></div>
+      <!-- RIGHT PANEL (clean placeholder removed) -->
+      <div class="detailPane glass" id="detailPane">
+        <div class="dHead">
+          <div>
+            <div class="dTitle" id="dTitle">Select a vehicle</div>
+            <div class="dMini" id="dMini"></div>
+          </div>
+        </div>
+
+        <div class="dBlock" id="dBody"></div>
+
+        <div class="dBtns admin-only admin-flex" style="margin-top:12px">
+          <button class="smallBtn primary" onclick="openEdit(selectedId)">Edit</button>
+          <button class="smallBtn" onclick="openParts(selectedId)">Parts</button>
+          <button class="smallBtn danger" onclick="removeCar(selectedId)">Delete</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ADMIN PANEL -->
-  <div class="card admin-only admin-block lift" id="adminPanel">
+  <div class="card glass admin-only admin-block" id="adminPanel">
     <div class="cardHead">
       <div>
         <h3>Add Vehicle</h3>
@@ -757,7 +636,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 
 <!-- EDIT MODAL (admin) -->
 <div class="modalBack admin-only" id="editBack">
-  <div class="modal">
+  <div class="modal glass">
     <div class="modalHead">
       <div>
         <h3>Edit Vehicle</h3>
@@ -812,7 +691,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 
 <!-- PARTS MODAL (PUBLIC VIEW + ADMIN EDIT) -->
 <div class="modalBack" id="partsBack">
-  <div class="modal">
+  <div class="modal glass">
     <div class="modalHead">
       <div>
         <h3>Vehicle Parts</h3>
@@ -878,7 +757,7 @@ body.is-admin td.admin-cell{ display:table-cell; }
 
 <!-- PHOTO VIEWER (anyone can use) -->
 <div class="modalBack" id="photoBack">
-  <div class="modal">
+  <div class="modal glass">
     <div class="photoViewer">
       <div class="photoViewerTop">
         <div>
@@ -905,29 +784,6 @@ body.is-admin td.admin-cell{ display:table-cell; }
 </div>
 
 <script>
-/* =========================================================
-   FIRESTORE RULES YOU MUST SET (PUBLIC VIEW + ADMIN WRITE)
-   =========================================================
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /inventory/{carId} {
-      allow read: if true;
-      allow create, update, delete: if request.auth != null;
-
-      match /parts/{partId} {
-        allow read: if true;
-        allow create, update, delete: if request.auth != null;
-      }
-    }
-    match /meta/stockCounter {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-  }
-}
-*/
-
 /* ========================
    FIREBASE INIT (COMPAT)
 ======================== */
@@ -948,7 +804,7 @@ const metaRef = db.collection("meta").doc("stockCounter");
 
 /* UI refs */
 const loginCard = document.getElementById("loginCard");
-const inventoryBody = document.getElementById("inventoryBody");
+const inventoryList = document.getElementById("inventoryList");
 const toast = document.getElementById("toast");
 
 const loginMsg = document.getElementById("loginMsg");
@@ -966,10 +822,20 @@ const liveHint = document.getElementById("liveHint");
 const searchEl = document.getElementById("search");
 const sortEl = document.getElementById("sort");
 
+/* detail pane */
+const dTitle = document.getElementById("dTitle");
+const dMini  = document.getElementById("dMini");
+const dBody  = document.getElementById("dBody");
+
+let selectedId = null;
+
 let isAdmin = false;
 let beeClicks = 0;
 let liveCars = [];
 let unsub = null;
+
+/* chips */
+const chipState = { photos:false, goodMotor:false, goodTrans:false, under100k:false };
 
 /* EDIT */
 const editBack = document.getElementById("editBack");
@@ -1012,7 +878,7 @@ function showToast(msg){
 }
 function escHtml(str){
   return String(str ?? "").replace(/[&<>"']/g,(m)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[m]));
 }
 function clean(str){ return String(str ?? "").trim(); }
@@ -1061,7 +927,15 @@ function parsePhotoUrls(text){
 function setAdminUI(on){
   isAdmin = !!on;
   document.body.classList.toggle("is-admin", isAdmin);
-  applyFilters();
+  queueApplyFilters();
+}
+
+function toggleChip(key){
+  chipState[key] = !chipState[key];
+  const map = { photos:"chipPhotos", goodMotor:"chipGoodMotor", goodTrans:"chipGoodTrans", under100k:"chipUnder100k" };
+  const el = document.getElementById(map[key]);
+  if(el) el.classList.toggle("on", chipState[key]);
+  queueApplyFilters();
 }
 
 /* ===== secret logo clicks ===== */
@@ -1103,11 +977,7 @@ async function logout(){
   closeParts();
   showToast("Admin disabled");
 }
-
-/* ===== auth state -> admin UI ===== */
-auth.onAuthStateChanged((user)=>{
-  setAdminUI(!!user);
-});
+auth.onAuthStateChanged((user)=> setAdminUI(!!user));
 
 /* =========================
    STOCK NUMBER (transaction)
@@ -1254,9 +1124,12 @@ function hookVinAutoFill(){
 }
 
 /* =========================
-   PHOTO
+   PHOTO (bind once = no lag)
    ========================= */
 function enableDragScroll(el){
+  if(el.dataset.bound === "1") return;
+  el.dataset.bound = "1";
+
   let isDown=false, startX=0, startLeft=0;
 
   el.addEventListener("mousedown",(e)=>{
@@ -1397,13 +1270,12 @@ function openParts(carId){
 function refreshParts(){ showToast("Refreshing…"); }
 
 function renderParts(){
-  partsBody.innerHTML = "";
   if(!__partsList.length){
     partsBody.innerHTML = `<tr><td colspan="5" class="muted">No parts listed for this vehicle.</td></tr>`;
     return;
   }
 
-  __partsList.forEach(p=>{
+  const html = __partsList.map(p=>{
     const name = escHtml(p.partName || "Part");
     const type = escHtml(p.partType || "");
     const inter = escHtml(p.interchange || "");
@@ -1413,7 +1285,7 @@ function renderParts(){
     const price = (typeof p.price === "number") ? p.price : parseMoney(p.price);
     const core = (typeof p.core === "number") ? p.core : parseMoney(p.core);
 
-    partsBody.insertAdjacentHTML("beforeend", `
+    return `
       <tr>
         <td>
           <div style="font-weight:950">${name}</div>
@@ -1438,8 +1310,10 @@ function renderParts(){
           ` : `<div class="muted">View only</div>`}
         </td>
       </tr>
-    `);
-  });
+    `;
+  }).join("");
+
+  partsBody.innerHTML = html;
 }
 
 function resetPartForm(){
@@ -1648,12 +1522,13 @@ async function addCar(){
 }
 
 async function removeCar(id){
-  if(!isAdmin) return;
+  if(!isAdmin || !id) return;
   if(!confirm("Delete this vehicle?")) return;
 
   try{
     await ref.doc(id).delete();
     showToast("Deleted");
+    if(selectedId === id) setSelected(null);
   }catch(e){
     showToast("Delete failed");
     console.error(e);
@@ -1665,7 +1540,7 @@ function scrollToAdmin(){
 }
 
 function openEdit(id){
-  if(!isAdmin) return;
+  if(!isAdmin || !id) return;
   const car = liveCars.find(x=>x.id===id);
   if(!car) return;
 
@@ -1775,6 +1650,7 @@ async function deleteFromEdit(){
   try{
     await ref.doc(editingId).delete();
     showToast("Deleted");
+    if(selectedId === editingId) setSelected(null);
     closeEdit();
   }catch(e){
     showToast("Delete failed");
@@ -1791,7 +1667,7 @@ document.addEventListener("keydown",(e)=>{
   }
 });
 
-/* ===== live render with snapshot ===== */
+/* ===== live render ===== */
 function startListener(){
   if(unsub) unsub();
 
@@ -1805,8 +1681,8 @@ function startListener(){
 
     countLine.textContent = `${liveCars.length} vehicles`;
     liveHint.textContent = "Live sync on";
-    setNote(invMsg, invMsgText, liveCars.length ? "Tap Stock/VIN to copy. Click Parts to view parts." : "No vehicles yet.", liveCars.length ? "" : "warn");
-    applyFilters();
+    setNote(invMsg, invMsgText, liveCars.length ? "Tap a card. Use chips to filter fast." : "No vehicles yet.", liveCars.length ? "" : "warn");
+    queueApplyFilters();
   }, (err)=>{
     setNote(invMsg, invMsgText, "Live sync failed: " + (err?.message || "rules/connection"), "bad");
     countLine.textContent = "Error";
@@ -1815,17 +1691,36 @@ function startListener(){
   });
 }
 
-/* ===== filters/sort ===== */
+/* ===== filters/sort (smooth) ===== */
+let _filterT = null;
+let _raf = 0;
+
+function queueApplyFilters(){
+  clearTimeout(_filterT);
+  _filterT = setTimeout(()=>{
+    if(_raf) cancelAnimationFrame(_raf);
+    _raf = requestAnimationFrame(()=>{
+      applyFilters();
+      _raf = 0;
+    });
+  }, 120);
+}
+
 function applyFilters(){
   const q = clean(searchEl.value).toLowerCase();
   const sort = sortEl.value;
 
   let list = liveCars.slice();
 
-  list.forEach(c=>{
+  for(const c of list){
     c._ts = getMs(c.createdAt);
     c._miles = (typeof c.mileage === "number") ? c.mileage : (parseMileage(String(c.mileage||"")) ?? null);
-  });
+  }
+
+  if(chipState.photos)    list = list.filter(c => Array.isArray(c.photos) && c.photos.filter(Boolean).length);
+  if(chipState.goodMotor) list = list.filter(c => c.goodMotor === true);
+  if(chipState.goodTrans) list = list.filter(c => c.goodTrans === true);
+  if(chipState.under100k) list = list.filter(c => (c._miles ?? 9e15) < 100000);
 
   if(q){
     list = list.filter(c=>{
@@ -1856,8 +1751,10 @@ function applyFilters(){
     return 0;
   });
 
-  renderTable(list);
+  renderList(list);
   document.querySelectorAll(".photoTrack").forEach(enableDragScroll);
+
+  if(selectedId && !list.some(x=>x.id===selectedId)) setSelected(null);
 }
 
 function getMs(t){
@@ -1879,32 +1776,29 @@ function buildPhotoSquare(carId, photos){
   __photosByCarId[carId] = arr;
 
   if(!arr.length){
-    return `
-      <div class="photoSquare">
-        <div class="photoFallback">NO PHOTOS</div>
-      </div>
-    `;
+    return `<div class="photoSquare"><div class="photoFallback">NO PHOTOS</div></div>`;
   }
 
   const imgs = arr.map((u,i)=>{
     const safe = escHtml(u);
-    return `<img src="${safe}" alt="Vehicle photo" loading="lazy" onclick="openPhoto('${carId}', ${i})" onerror="this.style.display='none'">`;
+    return `<img src="${safe}" alt="Vehicle photo" loading="lazy" decoding="async" onclick="openPhoto('${carId}', ${i}); event.stopPropagation();" onerror="this.style.display='none'">`;
   }).join("");
 
   return `
     <div class="photoSquare hasPhotos">
-      <div class="photoBadge"><span>${arr.length}</span> photo${arr.length===1?"":"s"}</div>
-      <div class="photoTrack" aria-label="Vehicle photos">
-        ${imgs}
-      </div>
+      <div class="photoBadge"><span>${arr.length}</span></div>
+      <div class="photoTrack" aria-label="Vehicle photos">${imgs}</div>
     </div>
   `;
 }
 
-function renderTable(list){
-  inventoryBody.innerHTML = "";
+function renderList(list){
+  if(!list.length){
+    inventoryList.innerHTML = "";
+    return;
+  }
 
-  list.forEach(c=>{
+  const html = list.map(c=>{
     const vehicleLine = `${escHtml(c.year||"")} ${escHtml(c.make||"")} ${escHtml(c.model||"")}`.trim() || "Vehicle";
     const vinVal = escHtml(c.vin||"");
     const stockVal = escHtml(c.stockNumber||"");
@@ -1920,9 +1814,6 @@ function renderTable(list){
     const milesLabel = fmtMiles(c.mileage);
     if(stockVal) tags.push(`<span class="tag stock">Stock: ${stockVal}</span>`);
     if(milesLabel) tags.push(`<span class="tag miles">${escHtml(milesLabel)}</span>`);
-    if(c.drivetrain) tags.push(`<span class="tag">${escHtml(c.drivetrain)}</span>`);
-    if(c.transmission) tags.push(`<span class="tag">${escHtml(c.transmission)}</span>`);
-    if(c.engine) tags.push(`<span class="tag">${escHtml(c.engine)}</span>`);
     if(c.goodMotor===true) tags.push(`<span class="tag ok">Good Motor ✅</span>`);
     if(c.goodMotor===false) tags.push(`<span class="tag bad">Bad Motor ❌</span>`);
     if(c.goodTrans===true) tags.push(`<span class="tag ok">Good Trans ✅</span>`);
@@ -1930,42 +1821,82 @@ function renderTable(list){
 
     const photoSquare = buildPhotoSquare(c.id, c.photos);
 
-    inventoryBody.insertAdjacentHTML("beforeend", `
-      <tr>
-        <td>
-          <div class="gallery">
-            ${photoSquare}
-            <div style="min-width:0">
-              <strong>${vehicleLine}</strong>
-              ${specs ? `<div class="specs">${specs}</div>` : ``}
-              ${tags.length ? `<div class="kv">${tags.join("")}</div>` : ``}
-            </div>
-          </div>
-        </td>
+    return `
+      <div class="vehicleCard" onclick="setSelected('${c.id}')">
+        ${photoSquare}
+        <div style="min-width:0">
+          <div class="vTitle">${vehicleLine}</div>
+          ${specs ? `<div class="vSub">${specs}</div>` : `<div class="vSub">—</div>`}
+          <div class="kv">${tags.join("")}</div>
 
-        <td>
-          <div class="copyLine">
+          <div class="actionsRow" onclick="event.stopPropagation()">
             ${stockVal ? `<button class="smallBtn" onclick="copyText('${stockVal}')">Copy Stock</button>` : ``}
             ${vinVal ? `<button class="smallBtn ghost" onclick="copyText('${vinVal}')">Copy VIN</button>` : ``}
             <button class="smallBtn" onclick="openParts('${c.id}')">Parts</button>
             ${vinVal ? `<button class="smallBtn ghost" onclick="copyText('${vehicleLine} • ${vinVal}')">Copy Line</button>` : ``}
-          </div>
-          <div class="specs" style="margin-top:8px">
-            ${stockVal ? `<div><strong>Stock:</strong> ${stockVal}</div>` : `<div>Stock: —</div>`}
-            ${vinVal ? `<div><strong>VIN:</strong> ${vinVal}</div>` : `<div>VIN: —</div>`}
-          </div>
-        </td>
 
-        <td class="admin-only admin-cell">
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="smallBtn primary" onclick="openEdit('${c.id}')">Edit</button>
-            <button class="smallBtn" onclick="openParts('${c.id}')">Parts</button>
-            <button class="smallBtn danger" onclick="removeCar('${c.id}')">Delete</button>
+            ${isAdmin ? `
+              <button class="smallBtn primary" onclick="openEdit('${c.id}')">Edit</button>
+              <button class="smallBtn danger" onclick="removeCar('${c.id}')">Delete</button>
+            ` : ``}
           </div>
-        </td>
-      </tr>
-    `);
-  });
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  inventoryList.innerHTML = html;
+}
+
+/* ===== RIGHT PANEL (placeholder removed) ===== */
+function setSelected(id){
+  selectedId = id;
+
+  if(!id){
+    dTitle.textContent = "Select a vehicle";
+    dMini.textContent = "";
+    dBody.innerHTML = "";  /* <<< removed the paragraph */
+    return;
+  }
+
+  const c = liveCars.find(x=>x.id===id);
+  if(!c) return;
+
+  const vehicleLine = `${clean(c.year)} ${clean(c.make)} ${clean(c.model)}`.trim() || "Vehicle";
+  const stock = clean(c.stockNumber) || "—";
+  const vin = clean(c.vin) || "—";
+  const miles = fmtMiles(c.mileage) || "—";
+  const color = clean(c.color) || "—";
+  const engine = clean(c.engine) || "—";
+  const trans = clean(c.transmission) || "—";
+  const drive = clean(c.drivetrain) || "—";
+
+  dTitle.textContent = vehicleLine;
+  dMini.textContent = `Stock: ${stock}`;
+
+  const gm = (c.goodMotor===true) ? "Good ✅" : (c.goodMotor===false) ? "Bad ❌" : "—";
+  const gt = (c.goodTrans===true) ? "Good ✅" : (c.goodTrans===false) ? "Bad ❌" : "—";
+
+  dBody.innerHTML = `
+    <div class="dLine"><span>Stock</span><b>${escHtml(stock)}</b></div>
+    <div class="dLine" style="margin-top:8px"><span>VIN</span><b style="max-width:60%;text-align:right">${escHtml(vin)}</b></div>
+
+    <div class="dBlock">
+      <div class="dLine"><span>Mileage</span><b>${escHtml(miles)}</b></div>
+      <div class="dLine" style="margin-top:8px"><span>Color</span><b>${escHtml(color)}</b></div>
+      <div class="dLine" style="margin-top:8px"><span>Engine</span><b>${escHtml(engine)}</b></div>
+      <div class="dLine" style="margin-top:8px"><span>Transmission</span><b>${escHtml(trans)}</b></div>
+      <div class="dLine" style="margin-top:8px"><span>Drivetrain</span><b>${escHtml(drive)}</b></div>
+      <div class="dLine" style="margin-top:8px"><span>Motor</span><b>${escHtml(gm)}</b></div>
+      <div class="dLine" style="margin-top:8px"><span>Trans</span><b>${escHtml(gt)}</b></div>
+    </div>
+
+    <div class="dBtns" style="margin-top:12px">
+      <button class="smallBtn" onclick="copyText('${escHtml(stock)}')">Copy Stock</button>
+      <button class="smallBtn ghost" onclick="copyText('${escHtml(vin)}')">Copy VIN</button>
+      <button class="smallBtn" onclick="openParts('${id}')">Open Parts</button>
+    </div>
+  `;
 }
 
 async function copyText(t){
@@ -1985,7 +1916,7 @@ async function copyText(t){
 
 function clearSearch(){
   searchEl.value = "";
-  applyFilters();
+  queueApplyFilters();
 }
 
 /* init */
@@ -1995,10 +1926,9 @@ function clearSearch(){
   setNote(invMsg, invMsgText, "Loading inventory…", "");
   setNote(loginMsg, loginMsgText, "", "");
   setNote(adminMsg, adminMsgText, "", "");
+  setSelected(null);
 })();
 </script>
 
 </body>
 </html>
-
-
